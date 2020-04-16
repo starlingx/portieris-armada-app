@@ -1,0 +1,52 @@
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: portieris
+data:
+  chart_name: portieris
+  release: portieris
+  namespace: default
+  wait:
+    timeout: 300
+    labels:
+      app: portieris
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  source:
+    type: tar
+    location: http://172.17.0.1/helm_charts/starlingx/portieris-0.6.0.tgz
+    subpath: portieris
+    reference: master
+  dependencies: []
+  values:
+    namespace: default
+    images:
+      tags:
+        portieris: docker.io/ibmcom/portieris:0.6.0
+    image:
+      host: docker.io/ibmcom
+      image: portieris
+      tags: 0.6.0
+    IBMContainerService: false
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: portieris
+data:
+  description: "StarlingX Portieris"
+  sequenced: true
+  chart_group:
+    - portieris
+---
+schema: armada/Manifest/v1
+metadata:
+  schema: metadata/Document/v1
+  name: portieris-manifest
+data:
+  release_prefix: 'stx'
+  chart_groups:
+    - portieris
