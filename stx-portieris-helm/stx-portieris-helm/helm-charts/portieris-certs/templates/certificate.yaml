@@ -1,0 +1,11 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: portieris-certs
+  namespace: portieris
+spec:
+  dnsNames:
+    - portieris.portieris.svc
+  secretName: portieris-certs
+  issuerRef:
+    name: stx-portieris

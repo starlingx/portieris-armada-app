@@ -2,11 +2,37 @@
 schema: armada/Chart/v1
 metadata:
   schema: metadata/Document/v1
+  name: portieris-certs
+data:
+  chart_name: portieris-certs
+  release: portieris-certs
+  namespace: portieris
+  wait:
+    timeout: 30
+    native:
+      enabled: true
+    resources: []
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+  source:
+    type: tar
+    location: http://172.17.0.1/helm_charts/starlingx/portieris-certs-0.1.0.tgz
+    subpath: portieris-certs
+    reference: master
+  dependencies: []
+  values:
+    caCert: ""
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
   name: portieris
 data:
   chart_name: portieris
   release: portieris
-  namespace: default
+  namespace: portieris
   wait:
     timeout: 300
     labels:
@@ -17,29 +43,33 @@ data:
     no_hooks: false
   source:
     type: tar
-    location: http://172.17.0.1/helm_charts/starlingx/portieris-0.6.0.tgz
+    location: http://172.17.0.1/helm_charts/starlingx/portieris-0.7.0.tgz
     subpath: portieris
     reference: master
   dependencies: []
   values:
-    namespace: default
+    replicaCount: 1
+    namespace: portieris
     images:
       tags:
-        portieris: docker.io/ibmcom/portieris:0.6.0
+        portieris: docker.io/ibmcom/portieris:0.7.0
     image:
       host: docker.io/ibmcom
       image: portieris
-      tags: 0.6.0
+      tags: 0.7.0
     IBMContainerService: false
+    SkipSecretCreation: true
+    UseCertManager: true
 ---
 schema: armada/ChartGroup/v1
 metadata:
   schema: metadata/Document/v1
-  name: portieris
+  name: portieris-charts
 data:
   description: "StarlingX Portieris"
   sequenced: true
   chart_group:
+    - portieris-certs
     - portieris
 ---
 schema: armada/Manifest/v1
@@ -49,4 +79,4 @@ metadata:
 data:
   release_prefix: 'stx'
   chart_groups:
-    - portieris
+    - portieris-charts

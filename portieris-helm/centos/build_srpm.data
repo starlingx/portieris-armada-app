@@ -1,5 +1,5 @@
 TAR_NAME=portieris
-VERSION=0.6.0
+VERSION=0.7.0
 TAR="$TAR_NAME-$VERSION.tgz"
 
 COPY_LIST="${CGCS_BASE}/downloads/$TAR $PKG_BASE/files/* "

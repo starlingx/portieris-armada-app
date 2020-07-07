@@ -38,6 +38,12 @@ chartmuseum --debug --port=8879 --context-path='/charts' --storage="local" --sto
 sleep 2
 helm repo add local http://localhost:8879/charts
 
+# Make the charts. These produce a tgz file
+cd helm-charts
+helm lint portieris-certs
+helm package portieris-certs
+cd -
+
 # terminate helm server (the last backgrounded task)
 kill %1
 
@@ -50,7 +56,7 @@ mkdir -p %{app_staging}
 cp files/metadata.yaml %{app_staging}
 cp manifests/*.yaml %{app_staging}
 mkdir -p %{app_staging}/charts
-#cp helm-charts/*.tgz %{app_staging}/charts
+cp helm-charts/*.tgz %{app_staging}/charts
 cp %{helm_folder}/portieris*.tgz %{app_staging}/charts
 cd %{app_staging}
 

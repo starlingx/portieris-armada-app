@@ -13,7 +13,7 @@
 
 Summary: StarlingX portieris Helm charts
 Name: portieris-helm
-Version: 0.6.0
+Version: 0.7.0
 Release: %{tis_patch_ver}%{?_tis_dist}
 License: Apache-2.0
 Group: base
@@ -23,10 +23,6 @@ URL: unknown
 Source0: portieris-%{version}.tgz
 Source1: repositories.yaml
 Source2: index.yaml
-Source3: caCert.pem
-Source4: caCert.srl
-Source5: serverCert.pem
-Source6: serverKey.pem
 
 BuildArch: noarch
 
@@ -54,11 +50,6 @@ helm repo add local http://localhost:8879/charts
 make helm.package
 cd %{_builddir}/portieris
 tar -xvf %{app_tarball}
-mkdir $PWD/portieris/certs
-cp %{SOURCE3} $PWD/portieris/certs
-cp %{SOURCE4} $PWD/portieris/certs
-cp %{SOURCE5} $PWD/portieris/certs
-cp %{SOURCE6} $PWD/portieris/certs
 tar -zcf %{app_tarball} portieris
 cd -
 
