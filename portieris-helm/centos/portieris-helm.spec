@@ -26,6 +26,8 @@ Source2: index.yaml
 
 BuildArch: noarch
 
+Patch01: 0001-Squash-required-portieris-fixes.patch
+
 BuildRequires: helm
 BuildRequires: chartmuseum
 
@@ -34,6 +36,7 @@ StarlingX portieris charts
 
 %prep
 %setup -n portieris
+%patch01 -p1
 
 %build
 # Host a server for the charts
