@@ -1,0 +1,4 @@
+BUILDER=docker
+LABEL=portieris
+DOCKER_REPO=https://github.com/IBM/portieris.git
+DOCKER_REF=0.7.0

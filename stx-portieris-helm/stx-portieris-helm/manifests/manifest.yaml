@@ -52,11 +52,12 @@ data:
     namespace: portieris
     images:
       tags:
-        portieris: docker.io/ibmcom/portieris:0.7.0
+        portieris: docker.io/starlingx/portieris:master-centos-stable-latest
     image:
-      host: docker.io/ibmcom
+      host: registry.local:9001/docker.io/starlingx
       image: portieris
-      tags: 0.7.0
+      tags: master-centos-stable-latest
+      tag: master-centos-stable-latest
     IBMContainerService: false
     SkipSecretCreation: true
     UseCertManager: true
