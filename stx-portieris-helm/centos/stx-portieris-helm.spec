@@ -69,13 +69,7 @@ rm -fr %{app_staging}
 %install
 install -d -m 755 %{buildroot}/%{app_folder}
 install -p -D -m 755 %{_builddir}/%{app_tarball} %{buildroot}/%{app_folder}
-install -d -m 755 %{buildroot}/%{helm_folder}
-install -p -D -m 755 %{helm_folder}/portieris*.tgz %{buildroot}/%{helm_folder}
-install -d -m 755 %{buildroot}/%{armada_folder}
-install -p -D -m 755 manifests/*.yaml %{buildroot}/%{armada_folder}
 
 %files
 %defattr(-,root,root,-)
-%{helm_folder}/*
-%{armada_folder}/*
 %{app_folder}/*
