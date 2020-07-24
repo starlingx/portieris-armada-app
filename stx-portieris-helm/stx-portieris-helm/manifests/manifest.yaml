@@ -62,6 +62,36 @@ data:
     SkipSecretCreation: true
     UseCertManager: true
 ---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: portieris-psp-rolebinding
+data:
+  chart_name: psp-rolebinding
+  release: portieris-psp-rolebinding
+  namespace: portieris
+  values:
+    rolebindingNamespace: portieris
+    serviceAccount: portieris
+  source:
+    location: http://172.17.0.1:8080/helm_charts/stx-platform/psp-rolebinding-0.1.0.tgz
+    subpath: psp-rolebinding
+    type: tar
+    reference: master
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+      - labels:
+          release_group: portieris-psp-rolebinding
+        type: job
+  wait:
+    labels:
+      release_group: portieris-psp-rolebinding
+    resources: []
+    timeout: 1800
+  dependencies: []
+---
 schema: armada/ChartGroup/v1
 metadata:
   schema: metadata/Document/v1
@@ -70,6 +100,7 @@ data:
   description: "StarlingX Portieris"
   sequenced: true
   chart_group:
+    - portieris-psp-rolebinding
     - portieris-certs
     - portieris
 ---

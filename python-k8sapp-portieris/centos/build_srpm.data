@@ -1,0 +1,6 @@
+SRC_DIR="k8sapp_portieris"
+
+# Keep the SRCREV in sync with stx-portieris-helm so the app version is the
+# same as the plugin version
+TIS_BASE_SRCREV=b6f2024cc2c31f7562a31aebc46f0bc490bde6f6
+TIS_PATCH_VER=GITREVCOUNT

@@ -42,6 +42,7 @@ helm repo add local http://localhost:8879/charts
 cd helm-charts
 helm lint portieris-certs
 helm package portieris-certs
+make psp-rolebinding
 cd -
 
 # terminate helm server (the last backgrounded task)
