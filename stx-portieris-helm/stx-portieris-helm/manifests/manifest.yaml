@@ -52,12 +52,12 @@ data:
     namespace: portieris
     images:
       tags:
-        portieris: docker.io/starlingx/portieris:master-centos-stable-latest
+        portieris: docker.io/starlingx/portieris:stx.5.0-v0.7.0
     image:
       host: registry.local:9001/docker.io/starlingx
       image: portieris
-      tags: master-centos-stable-latest
-      tag: master-centos-stable-latest
+      tags: stx.5.0-v0.7.0
+      tag: stx.5.0-v0.7.0
     IBMContainerService: false
     SkipSecretCreation: true
     UseCertManager: true
