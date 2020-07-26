@@ -1,5 +1,5 @@
 # Application tunables (maps to metadata)
-%global app_name stx-portieris
+%global app_name portieris
 %global helm_repo starlingx
 %global helm_folder  /usr/lib/helm
 %global armada_folder  /usr/lib/armada
