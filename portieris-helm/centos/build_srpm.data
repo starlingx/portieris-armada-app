@@ -4,5 +4,5 @@ TAR="$TAR_NAME-$VERSION.tgz"
 
 COPY_LIST="${CGCS_BASE}/downloads/$TAR $PKG_BASE/files/* "
 
-TIS_PATCH_VER=1
+TIS_PATCH_VER=0
 

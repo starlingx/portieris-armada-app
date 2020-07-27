@@ -1,6 +1,9 @@
 SRC_DIR="stx-portieris-helm"
 
-TIS_PATCH_VER=0
+# This should match python-k8sapp-portieris TIS_BASE_SRCREV
+# so that app and plugins are versioned the same
+TIS_BASE_SRCREV=b6f2024cc2c31f7562a31aebc46f0bc490bde6f6
+TIS_PATCH_VER=GITREVCOUNT
 
 COPY_LIST_TO_TAR="\
     $STX_BASE/helm-charts/psp-rolebinding/psp-rolebinding/helm-charts \
