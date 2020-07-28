@@ -11,7 +11,7 @@ from sysinv.common import exception
 from sysinv.helm import base
 
 
-class PSPRolebindingHelm(base.BaseHelm):
+class PortierisCertsHelm(base.BaseHelm):
     """Class to encapsulate helm operations for the psp rolebinding chart"""
 
     SUPPORTED_NAMESPACES = base.BaseHelm.SUPPORTED_NAMESPACES + \
@@ -21,8 +21,8 @@ class PSPRolebindingHelm(base.BaseHelm):
             base.BaseHelm.SUPPORTED_NAMESPACES + [constants.HELM_NS_PORTIERIS],
     }
 
-    CHART = constants.HELM_CHART_PSP_ROLEBINDING
-    SERVICE_NAME = 'psp-rolebinding'
+    CHART = constants.HELM_CHART_PORTIERIS_CERTS
+    SERVICE_NAME = 'portieris-certs'
 
     def get_namespaces(self):
         return self.SUPPORTED_NAMESPACES

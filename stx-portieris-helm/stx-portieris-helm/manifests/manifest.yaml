@@ -67,7 +67,7 @@ metadata:
   schema: metadata/Document/v1
   name: portieris-psp-rolebinding
 data:
-  chart_name: psp-rolebinding
+  chart_name: portieris-psp-rolebinding
   release: portieris-psp-rolebinding
   namespace: portieris
   values:
