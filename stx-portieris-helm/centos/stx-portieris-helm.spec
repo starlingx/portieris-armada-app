@@ -24,7 +24,6 @@ BuildArch: noarch
 BuildRequires: helm
 BuildRequires: chartmuseum
 BuildRequires: portieris-helm
-Requires: portieris-helm
 
 %description
 StarlingX Portieris Armada Helm Charts
