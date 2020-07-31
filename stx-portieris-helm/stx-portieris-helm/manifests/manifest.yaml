@@ -18,7 +18,7 @@ data:
     no_hooks: false
   source:
     type: tar
-    location: http://172.17.0.1/helm_charts/starlingx/portieris-certs-0.1.0.tgz
+    location: http://172.17.0.1/helm_charts/stx-platform/portieris-certs-0.1.0.tgz
     subpath: portieris-certs
     reference: master
   dependencies: []
@@ -43,7 +43,7 @@ data:
     no_hooks: false
   source:
     type: tar
-    location: http://172.17.0.1/helm_charts/starlingx/portieris-0.7.0.tgz
+    location: http://172.17.0.1/helm_charts/stx-platform/portieris-0.7.0.tgz
     subpath: portieris
     reference: master
   dependencies: []
@@ -109,6 +109,6 @@ metadata:
   schema: metadata/Document/v1
   name: portieris-manifest
 data:
-  release_prefix: 'stx'
+  release_prefix: 'portieris'
   chart_groups:
     - portieris-charts

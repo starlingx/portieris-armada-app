@@ -1,6 +1,6 @@
 # Application tunables (maps to metadata)
 %global app_name portieris
-%global helm_repo starlingx
+%global helm_repo stx-platform
 %global helm_folder  /usr/lib/helm
 %global armada_folder  /usr/lib/armada
 %global app_folder  /usr/local/share/applications/helm
