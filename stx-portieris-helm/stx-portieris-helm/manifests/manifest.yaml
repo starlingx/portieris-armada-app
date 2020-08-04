@@ -48,7 +48,7 @@ data:
     reference: master
   dependencies: []
   values:
-    replicaCount: 1
+    replicaCount: 3
     namespace: portieris
     images:
       tags:
