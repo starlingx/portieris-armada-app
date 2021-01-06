@@ -20,15 +20,6 @@ BuildRequires: python2-wheel
 %description
 StarlingX sysinv extensions: Portieris K8S app
 
-%package -n     python2-%{pypi_name}
-Summary:        StarlingX sysinv extensions: Portieris K8S app
-
-Requires:       python-pbr >= 2.0.0
-Requires:       sysinv >= 1.0
-
-%description -n python2-%{pypi_name}
-StarlingX sysinv extensions: Portieris Manager K8S app
-
 %prep
 %setup
 # Remove bundled egg-info
