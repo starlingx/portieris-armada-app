@@ -8,3 +8,8 @@ TIS_PATCH_VER=GITREVCOUNT
 COPY_LIST_TO_TAR="\
     $STX_BASE/helm-charts/psp-rolebinding/psp-rolebinding/helm-charts \
 "
+
+OPT_DEP_LIST="\
+    $STX_BASE/portieris-armada-app/python-k8sapp-portieris \
+    $STX_BASE/portieris-armada-app/portieris-helm \
+"

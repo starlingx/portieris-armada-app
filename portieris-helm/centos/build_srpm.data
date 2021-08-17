@@ -4,5 +4,7 @@ TAR="$TAR_NAME-$VERSION.tgz"
 
 COPY_LIST="${CGCS_BASE}/downloads/$TAR $PKG_BASE/files/* "
 
+OPT_DEP_LIST="$STX_BASE/portieris-armada-app/stx-portieris-helm"
+
 TIS_PATCH_VER=PKG_GITREVCOUNT
 
