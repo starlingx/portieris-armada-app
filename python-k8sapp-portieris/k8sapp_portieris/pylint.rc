@@ -124,8 +124,9 @@ enable=E1603,E1609,E1610,E1602,E1606,E1608,E1607,E1605,E1604,E1601,E1611,W1652,
 # https://pylint.readthedocs.io/en/latest/user_guide
 # We are disabling (C)onvention
 # We are disabling (R)efactor
+# W0212: protected-access
 # W1618: no-absolute-import
-disable=C, R, W1618
+disable=C, R, W0212, W1618
 
 [REPORTS]
 # Set the output format. Available formats are text, parseable, colorized, msvs
