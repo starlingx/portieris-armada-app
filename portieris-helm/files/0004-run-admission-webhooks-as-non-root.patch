@@ -1,0 +1,105 @@
+From 8a6d884de01c2ce8ad9f68284b69a0ae2e5dea2a Mon Sep 17 00:00:00 2001
+From: Michel Thebeau <Michel.Thebeau@windriver.com>
+Date: Wed, 1 Sep 2021 18:54:44 -0400
+Subject: [PATCH 4/4] run admission webhooks as non-root
+
+With pod security policies enabled the webhooks will not run as root,
+with "Error: container has runAsNonRoot and image will run as root".
+
+Copy the securityContext from portieris chart, run as 'portieris'
+service account.
+
+Fix subsequent jobs that fail with the absent securityContext,
+permissions.  Add patch verb to customresourcedefinitions for portieris
+service add account.
+
+Signed-off-by: Michel Thebeau <Michel.Thebeau@windriver.com>
+---
+ .../admission-webhooks/create-admission-webhooks.yaml         | 3 +++
+ .../admission-webhooks/delete-admission-webhooks.yaml         | 3 +++
+ helm/portieris/templates/clusterrole.yaml                     | 4 ++--
+ helm/portieris/templates/crd-creation/create-crds.yaml        | 4 +++-
+ helm/portieris/templates/crd-creation/delete-crds.yaml        | 4 +++-
+ .../templates/crd-creation/validate-crd-creation.yaml         | 4 +++-
+ 6 files changed, 17 insertions(+), 5 deletions(-)
+
+diff --git a/helm/portieris/templates/admission-webhooks/create-admission-webhooks.yaml b/helm/portieris/templates/admission-webhooks/create-admission-webhooks.yaml
+index 7773413..cbe0eb7 100644
+--- a/helm/portieris/templates/admission-webhooks/create-admission-webhooks.yaml
++++ b/helm/portieris/templates/admission-webhooks/create-admission-webhooks.yaml
+@@ -44,3 +44,6 @@ spec:
+           configMap:
+             name: admission-webhooks
+       restartPolicy: OnFailure
++      securityContext:
++        runAsUser: {{ .Values.securityContext.runAsUser }}
++
+diff --git a/helm/portieris/templates/admission-webhooks/delete-admission-webhooks.yaml b/helm/portieris/templates/admission-webhooks/delete-admission-webhooks.yaml
+index ce34927..dd8c259 100644
+--- a/helm/portieris/templates/admission-webhooks/delete-admission-webhooks.yaml
++++ b/helm/portieris/templates/admission-webhooks/delete-admission-webhooks.yaml
+@@ -40,3 +40,6 @@ spec:
+           configMap:
+             name: admission-webhooks
+       restartPolicy: OnFailure
++      securityContext:
++        runAsUser: {{ .Values.securityContext.runAsUser }}
++
+diff --git a/helm/portieris/templates/clusterrole.yaml b/helm/portieris/templates/clusterrole.yaml
+index 67c5912..13b4cb4 100644
+--- a/helm/portieris/templates/clusterrole.yaml
++++ b/helm/portieris/templates/clusterrole.yaml
+@@ -16,10 +16,10 @@ rules:
+   verbs: ["get", "watch", "list", "create", "patch"]
+ - apiGroups: ["apiextensions.k8s.io"]
+   resources: ["customresourcedefinitions"]
+-  verbs: ["get", "create", "delete"]
++  verbs: ["get", "create", "delete", "patch"]
+ - apiGroups: ["admissionregistration.k8s.io"]
+   resources: ["validatingwebhookconfigurations", "mutatingwebhookconfigurations"]
+-  verbs: ["get", "create", "delete"]
++  verbs: ["get", "create", "delete", "patch"]
+ - apiGroups: [""]
+   resources: ["secrets", "serviceaccounts"]
+   verbs: ["get"]
+diff --git a/helm/portieris/templates/crd-creation/create-crds.yaml b/helm/portieris/templates/crd-creation/create-crds.yaml
+index 3ac36f6..13b0ca2 100644
+--- a/helm/portieris/templates/crd-creation/create-crds.yaml
++++ b/helm/portieris/templates/crd-creation/create-crds.yaml
+@@ -39,4 +39,6 @@ spec:
+           configMap:
+             name: image-policy-crds
+       restartPolicy: OnFailure
+-      
+\ No newline at end of file
++      securityContext:
++        runAsUser: {{ .Values.securityContext.runAsUser }}
++
+diff --git a/helm/portieris/templates/crd-creation/delete-crds.yaml b/helm/portieris/templates/crd-creation/delete-crds.yaml
+index 9080511..783fe23 100644
+--- a/helm/portieris/templates/crd-creation/delete-crds.yaml
++++ b/helm/portieris/templates/crd-creation/delete-crds.yaml
+@@ -40,4 +40,6 @@ spec:
+           configMap:
+             name: image-policy-crds
+       restartPolicy: OnFailure
+-      
++      securityContext:
++        runAsUser: {{ .Values.securityContext.runAsUser }}
++
+diff --git a/helm/portieris/templates/crd-creation/validate-crd-creation.yaml b/helm/portieris/templates/crd-creation/validate-crd-creation.yaml
+index 5c68466..d3075da 100644
+--- a/helm/portieris/templates/crd-creation/validate-crd-creation.yaml
++++ b/helm/portieris/templates/crd-creation/validate-crd-creation.yaml
+@@ -33,4 +33,6 @@ spec:
+             - imagepolicies.securityenforcement.admission.cloud.ibm.com
+             - clusterimagepolicies.securityenforcement.admission.cloud.ibm.com
+       restartPolicy: OnFailure
+-      
+\ No newline at end of file
++      securityContext:
++        runAsUser: {{ .Values.securityContext.runAsUser }}
++
+-- 
+2.29.2
+
