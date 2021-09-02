@@ -2,13 +2,33 @@
 - project:
     check:
       jobs:
+        - k8app-portieris-tox-py39
         - openstack-tox-linters
     gate:
       jobs:
+        - k8app-portieris-tox-py39
         - openstack-tox-linters
     post:
       jobs:
         - stx-portieris-armada-app-upload-git-mirror
+
+- job:
+    name: k8app-portieris-tox-py39
+    parent: tox-py39
+    description: |
+        Run py39 test for portieris
+    nodeset: debian-bullseye
+    required-projects:
+      - starlingx/config
+      - starlingx/fault
+      - starlingx/update
+      - starlingx/utilities
+    files:
+      - python-k8app-portieris/*
+    vars:
+        tox_envlist: py39
+        python_version: 3.9
+        tox_extra_args: -c python-k8sapp-portieris/k8sapp_portieris/tox.ini
 
 - job:
     name: stx-portieris-armada-app-upload-git-mirror

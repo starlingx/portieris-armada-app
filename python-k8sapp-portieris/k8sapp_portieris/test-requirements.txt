@@ -6,11 +6,13 @@ flake8<3.8.0
 pycodestyle<2.6.0 # MIT License
 coverage>=3.6
 discover
+mock>=2.0.0 # BSD
 passlib>=1.7.0
 psycopg2-binary
 python-subunit>=0.0.18
 requests-mock>=0.6.0 # Apache-2.0
 oslotest>=3.2.0 # Apache-2.0
+stestr>=1.0.0 # Apache-2.0
 testrepository>=0.0.18
 testtools!=1.2.0,>=0.9.36
 ipaddr
