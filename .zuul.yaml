@@ -4,10 +4,12 @@
       jobs:
         - k8app-portieris-tox-py39
         - openstack-tox-linters
+        - k8sapp-portieris-tox-pylint
     gate:
       jobs:
         - k8app-portieris-tox-py39
         - openstack-tox-linters
+        - k8sapp-portieris-tox-pylint
     post:
       jobs:
         - stx-portieris-armada-app-upload-git-mirror
@@ -42,6 +44,22 @@
       - name: git_mirror_credentials
         secret: stx-portieris-armada-app-github-secret
         pass-to-parent: true
+
+- job:
+    name: k8sapp-portieris-tox-pylint
+    parent: tox
+    description: |
+      Run pylint test for k8sapp_portieris
+    required-projects:
+      - starlingx/config
+      - starlingx/fault
+      - starlingx/update
+      - starlingx/utilities
+    files:
+      - python-k8sapp-portieris/*
+    vars:
+      tox_envlist: pylint
+      tox_extra_args: -c python-k8sapp-portieris/k8sapp_portieris/tox.ini
 
 - secret:
     name: stx-portieris-armada-app-github-secret
