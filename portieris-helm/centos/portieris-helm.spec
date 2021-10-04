@@ -30,6 +30,7 @@ Patch01: 0001-Squash-required-portieris-fixes.patch
 Patch02: 0002-add-image-pull-secrets-to-images.patch
 Patch03: 0003-add-toggle-to-reinstall-the-admission-webhook.patch
 Patch04: 0004-run-admission-webhooks-as-non-root.patch
+Patch05: 0005-add-toleration.patch
 
 BuildRequires: helm
 BuildRequires: chartmuseum
@@ -43,6 +44,7 @@ StarlingX portieris charts
 %patch02 -p1
 %patch03 -p1
 %patch04 -p1
+%patch05 -p1
 
 %build
 # Host a server for the charts
