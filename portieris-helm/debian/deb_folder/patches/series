@@ -1,0 +1,5 @@
+0001-Squash-required-portieris-fixes.patch
+0002-add-image-pull-secrets-to-images.patch
+0003-add-toggle-to-reinstall-the-admission-webhook.patch
+0004-run-admission-webhooks-as-non-root.patch
+0005-add-toleration.patch

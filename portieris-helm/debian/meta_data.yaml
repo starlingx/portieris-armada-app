@@ -1,7 +1,14 @@
 ---
 debname: portieris-helm
 debver: 1.0-1
-dl_hook: dl_hook
+dl_path:
+  name: portieris-0.7.0.tgz
+  url: https://github.com/IBM/portieris/archive/0.7.0.tar.gz
+  md5sum: ef9c907c5fe0e49db91fd0072d39111e
+src_files:
+  - files/metadata.yaml
+  - files/index.yaml
+  - files/repositories.yaml
 revision:
   dist: $STX_DIST
   PKG_GITREVCOUNT: true

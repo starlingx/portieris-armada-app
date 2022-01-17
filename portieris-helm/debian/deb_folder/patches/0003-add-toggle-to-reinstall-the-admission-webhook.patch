@@ -1,0 +1,51 @@
+From b5defc7482fa8a0b1ad7c96a1ad8d8b578fb7d2c Mon Sep 17 00:00:00 2001
+From: Michel Thebeau <Michel.Thebeau@windriver.com>
+Date: Wed, 1 Sep 2021 10:34:54 -0400
+Subject: [PATCH 3/4] add toggle to reinstall the admission webhook
+
+The backup and restore procedure will set ReapplyAdmissionWebhook to
+true to force an "upgrade" of an already installed Portieris
+application.  The webhooks job is run on the helm chart's post-upgrade
+hook.  The chart value ReapplyAdmissionWebhook is reserved to simplify
+its handling by backup and restore.
+
+Signed-off-by: Michel Thebeau <Michel.Thebeau@windriver.com>
+---
+ .../admission-webhooks/create-admission-webhooks.yaml         | 4 ++++
+ helm/portieris/values.yaml                                    | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/helm/portieris/templates/admission-webhooks/create-admission-webhooks.yaml b/helm/portieris/templates/admission-webhooks/create-admission-webhooks.yaml
+index 04bb56a..7773413 100644
+--- a/helm/portieris/templates/admission-webhooks/create-admission-webhooks.yaml
++++ b/helm/portieris/templates/admission-webhooks/create-admission-webhooks.yaml
+@@ -4,7 +4,11 @@ metadata:
+   name: create-admission-webhooks
+   namespace: {{ .Values.namespace }}
+   annotations:
++    {{ if .Values.ReapplyAdmissionWebhook }}
++    helm.sh/hook: post-install,post-upgrade
++    {{ else }}
+     helm.sh/hook: post-install
++    {{ end }}
+     helm.sh/hook-weight: "5"
+     helm.sh/hook-delete-policy: hook-succeeded
+   labels:
+diff --git a/helm/portieris/values.yaml b/helm/portieris/values.yaml
+index 8b1a13e..d73d6f2 100644
+--- a/helm/portieris/values.yaml
++++ b/helm/portieris/values.yaml
+@@ -29,6 +29,10 @@ SkipSecretCreation: false
+ # If using cert-manager to handle secrets
+ UseCertManager: false
+ 
++# Set to force helm upgrade, rerun the create-admission-webhooks job
++# This value is reserved for the StarlingX backup and restore procedure
++ReapplyAdmissionWebhook: false
++
+ # Resoures defined to assist scheduling
+ # request is typical x10, limit is typical x100
+ resources:
+-- 
+2.29.2
+
