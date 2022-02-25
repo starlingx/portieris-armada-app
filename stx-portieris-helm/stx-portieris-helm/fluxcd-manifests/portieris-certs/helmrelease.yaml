@@ -1,0 +1,36 @@
+#
+# Copyright (c) 2022 Wind River Systems, Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+apiVersion: "helm.toolkit.fluxcd.io/v2beta1"
+kind: HelmRelease
+metadata:
+  name: portieris-certs
+  labels:
+    chart_group: portieris-charts
+spec:
+  releaseName: portieris-portieris-certs
+  chart:
+    spec:
+      chart: portieris-certs
+      version: 0.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: stx-platform
+  interval: 5m
+  timeout: 30m
+  test:
+    enable: false
+  install:
+    disableHooks: false
+  upgrade:
+    disableHooks: false
+  valuesFrom:
+    - kind: Secret
+      name: portieris-certs-static-overrides
+      valuesKey: portieris-certs-static-overrides.yaml
+    - kind: Secret
+      name: portieris-certs-system-overrides
+      valuesKey: portieris-certs-system-overrides.yaml

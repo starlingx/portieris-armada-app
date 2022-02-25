@@ -1,0 +1,20 @@
+#
+# Copyright (c) 2022 Wind River Systems, Inc.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+replicaCount: 3
+namespace: portieris
+images:
+  tags:
+    portieris: docker.io/starlingx/portieris:stx.5.0-v0.7.0
+image:
+  host: registry.local:9001/docker.io/starlingx
+  image: portieris
+  tags: stx.5.0-v0.7.0
+  tag: stx.5.0-v0.7.0
+IBMContainerService: false
+SkipSecretCreation: true
+UseCertManager: true
+
