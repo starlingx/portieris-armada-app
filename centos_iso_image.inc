@@ -1,2 +1,2 @@
 stx-portieris-helm
-stx-portieris-helm-fluxcd
+stx-portieris-helm-armada

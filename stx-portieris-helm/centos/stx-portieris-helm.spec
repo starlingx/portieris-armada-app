@@ -8,7 +8,7 @@
 %global helmchart_version 0.1.0
 
 
-Summary: StarlingX Portieris Armada Helm Charts
+Summary: StarlingX Portieris FluxCD Helm Charts
 Name: stx-portieris-helm
 Version: 1.0
 Release: %{tis_patch_ver}%{?_tis_dist}
@@ -34,13 +34,13 @@ BuildRequires: python-k8sapp-portieris-wheels
 %description
 StarlingX Portieris Armada Helm Charts
 
-%package fluxcd
-Summary: StarlingX Portieris Application FluxCD Helm Charts
+%package armada
+Summary: StarlingX Portieris Application Armada Helm Charts
 Group: base
 License: Apache-2.0
 
-%description fluxcd
-StarlingX Portieris Application FluxCD Helm Charts
+%description armada
+StarlingX Portieris Application Armada Helm Charts
 
 %prep
 %setup
@@ -68,8 +68,8 @@ kill %1
 
 # Create a chart tarball compliant with sysinv kube-app.py
 %define app_staging %{_builddir}/staging
-%define app_tarball_armada %{app_name}-%{version}-%{tis_patch_ver}.tgz
-%define app_tarball_fluxcd %{app_name}-fluxcd-%{version}-%{tis_patch_ver}.tgz
+%define app_tarball_armada %{app_name}-armada-%{version}-%{tis_patch_ver}.tgz
+%define app_tarball_fluxcd %{app_name}-%{version}-%{tis_patch_ver}.tgz
 
 # Setup staging
 mkdir -p %{app_staging}
@@ -122,10 +122,10 @@ install -d -m 755 %{buildroot}/%{app_folder}
 install -p -D -m 755 %{_builddir}/%{app_tarball_armada} %{buildroot}/%{app_folder}
 install -p -D -m 755 %{_builddir}/%{app_tarball_fluxcd} %{buildroot}/%{app_folder}
 
-%files
+%files armada
 %defattr(-,root,root,-)
 %{app_folder}/%{app_tarball_armada}
 
-%files fluxcd
+%files
 %defattr(-,root,root,-)
 %{app_folder}/%{app_tarball_fluxcd}
