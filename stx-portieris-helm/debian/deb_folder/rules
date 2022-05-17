@@ -10,7 +10,8 @@ export MINOR_PATCH = $(shell echo $(DEB_VERSION) | cut -f 2 -d '.')
 
 export APP_NAME = portieris
 export APP_VERSION = $(MAJOR).$(MINOR_PATCH)
-export APP_TARBALL = $(APP_NAME)-$(APP_VERSION).tgz
+export APP_TARBALL_ARMADA = $(APP_NAME)-armada-$(APP_VERSION).tgz
+export APP_TARBALL_FLUXCD = $(APP_NAME)-$(APP_VERSION).tgz
 export HELM_FOLDER = /usr/lib/helm
 export HELM_REPO = stx-platform
 export STAGING = staging
@@ -24,12 +25,15 @@ override_dh_auto_build:
 		--storage-local-rootdir="." &
 	sleep 2
 	helm repo add local http://localhost:8879/charts
+
 	# Create the TGZ file.
 	cd helm-charts && helm lint portieris-certs
 	cd helm-charts && helm package portieris-certs
-	cd helm-charts && make psp-rolebinding
+	cd helm-charts && $(MAKE) psp-rolebinding
+
 	# Terminate the helm chart server.
 	pkill chartmuseum
+
 	# Setup the staging directory.
 	mkdir -p $(STAGING)
 	cp files/metadata.yaml $(STAGING)
@@ -37,22 +41,36 @@ override_dh_auto_build:
 	mkdir -p $(STAGING)/charts
 	cp helm-charts/*.tgz $(STAGING)/charts
 	cp $(HELM_FOLDER)/portieris*.tgz $(STAGING)/charts
+
 	# Populate metadata.
 	sed -i 's/@APP_NAME@/$(APP_NAME)/g' $(STAGING)/metadata.yaml
 	sed -i 's/@APP_VERSION@/$(APP_VERSION)/g' $(STAGING)/metadata.yaml
 	sed -i 's/@HELM_REPO@/$(HELM_REPO)/g' $(STAGING)/metadata.yaml
+
 	# Copy the plugins: installed in the buildroot
 	mkdir -p $(STAGING)/plugins
 	cp /plugins/$(APP_NAME)/*.whl $(STAGING)/plugins
-	# Create the app package.
+
+	# Create the app package for the armada package.
 	cd $(STAGING) && find . -type f ! -name '*.md5' -print0 | xargs -0 md5sum > checksum.md5
-	tar cfz $(APP_TARBALL) -C $(STAGING)/ .
+	tar cfz $(APP_TARBALL_ARMADA) -C $(STAGING)/ .
+
+	# Prepare staging for fluxcd package
+	rm -f $(STAGING)/manifest.yaml
+	cp -R fluxcd-manifests $(STAGING)/
+
+	# calculate checksum of all files in staging for the fluxcd app
+	cd $(STAGING) && find . -type f ! -name '*.md5' -print0 | xargs -0 md5sum > checksum.md5
+	# package fluxcd app
+	tar -zcf $(APP_TARBALL_FLUXCD) -C $(STAGING)/ .
+
 	# Cleanup staging.
 	rm -rf $(STAGING)
 
 override_dh_auto_install:
 	# Install the app tar file.
 	install -d -m 755 $(APP_FOLDER)
-	install -p -D -m 755 $(APP_TARBALL) $(APP_FOLDER)
+	install -p -D -m 755 $(APP_TARBALL_ARMADA) $(APP_FOLDER)
+	install -p -D -m 755 $(APP_TARBALL_FLUXCD) $(APP_FOLDER)
 
 override_dh_usrlocal:
