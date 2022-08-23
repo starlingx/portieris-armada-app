@@ -16,6 +16,6 @@ Package: stx-portieris-helm
 Section: libs
 Architecture: any
 Depends: ${misc:Depends}
-Description: StarlingX Portieris Armada Helm Charts
- This package contains Armada helm charts for the portieris
+Description: StarlingX Portieris FluxCD Helm Charts
+ This package contains FluxCD helm charts for the portieris
  application.

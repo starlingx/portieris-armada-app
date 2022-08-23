@@ -10,7 +10,6 @@ export MINOR_PATCH = $(shell echo $(DEB_VERSION) | cut -f 2 -d '.')
 
 export APP_NAME = portieris
 export APP_VERSION = $(MAJOR).$(MINOR_PATCH)
-export APP_TARBALL_ARMADA = $(APP_NAME)-armada-$(APP_VERSION).tgz
 export APP_TARBALL_FLUXCD = $(APP_NAME)-$(APP_VERSION).tgz
 export HELM_FOLDER = /usr/lib/helm
 export HELM_REPO = stx-platform
@@ -37,7 +36,6 @@ override_dh_auto_build:
 	# Setup the staging directory.
 	mkdir -p $(STAGING)
 	cp files/metadata.yaml $(STAGING)
-	cp manifests/*.yaml $(STAGING)
 	mkdir -p $(STAGING)/charts
 	cp helm-charts/*.tgz $(STAGING)/charts
 	cp $(HELM_FOLDER)/portieris*.tgz $(STAGING)/charts
@@ -51,12 +49,7 @@ override_dh_auto_build:
 	mkdir -p $(STAGING)/plugins
 	cp /plugins/$(APP_NAME)/*.whl $(STAGING)/plugins
 
-	# Create the app package for the armada package.
-	cd $(STAGING) && find . -type f ! -name '*.md5' -print0 | xargs -0 md5sum > checksum.md5
-	tar cfz $(APP_TARBALL_ARMADA) -C $(STAGING)/ .
-
 	# Prepare staging for fluxcd package
-	rm -f $(STAGING)/manifest.yaml
 	cp -R fluxcd-manifests $(STAGING)/
 
 	# calculate checksum of all files in staging for the fluxcd app
@@ -70,7 +63,6 @@ override_dh_auto_build:
 override_dh_auto_install:
 	# Install the app tar file.
 	install -d -m 755 $(APP_FOLDER)
-	install -p -D -m 755 $(APP_TARBALL_ARMADA) $(APP_FOLDER)
 	install -p -D -m 755 $(APP_TARBALL_FLUXCD) $(APP_FOLDER)
 
 override_dh_usrlocal:

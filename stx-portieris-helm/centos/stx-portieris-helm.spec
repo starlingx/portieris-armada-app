@@ -2,7 +2,6 @@
 %global app_name portieris
 %global helm_repo stx-platform
 %global helm_folder  /usr/lib/helm
-%global armada_folder  /usr/lib/armada
 %global app_folder  /usr/local/share/applications/helm
 %global toolkit_version 0.1.0
 %global helmchart_version 0.1.0
@@ -32,15 +31,7 @@ BuildRequires: python-k8sapp-portieris
 BuildRequires: python-k8sapp-portieris-wheels
 
 %description
-StarlingX Portieris Armada Helm Charts
-
-%package armada
-Summary: StarlingX Portieris Application Armada Helm Charts
-Group: base
-License: Apache-2.0
-
-%description armada
-StarlingX Portieris Application Armada Helm Charts
+StarlingX Portieris FluxCD Helm Charts
 
 %prep
 %setup
@@ -68,13 +59,11 @@ kill %1
 
 # Create a chart tarball compliant with sysinv kube-app.py
 %define app_staging %{_builddir}/staging
-%define app_tarball_armada %{app_name}-armada-%{version}-%{tis_patch_ver}.tgz
 %define app_tarball_fluxcd %{app_name}-%{version}-%{tis_patch_ver}.tgz
 
 # Setup staging
 mkdir -p %{app_staging}
 cp files/metadata.yaml %{app_staging}
-cp manifests/manifest.yaml %{app_staging}
 mkdir -p %{app_staging}/charts
 
 # copy portieris-certs, psp-rolebinding charts
@@ -88,21 +77,11 @@ mkdir -p %{app_staging}/plugins
 cp /plugins/%{app_name}/*.whl %{app_staging}/plugins
 
 # Populate metadata
-cd %{app_staging}
 sed -i 's/@APP_NAME@/%{app_name}/g' %{app_staging}/metadata.yaml
 sed -i 's/@APP_VERSION@/%{version}-%{tis_patch_ver}/g' %{app_staging}/metadata.yaml
 sed -i 's/@HELM_REPO@/%{helm_repo}/g' %{app_staging}/metadata.yaml
 
-# calculate checksum of all files in app_staging
-find . -type f ! -name '*.md5' -print0 | xargs -0 md5sum > checksum.md5
-tar -zcf %{_builddir}/%{app_tarball_armada} -C %{app_staging}/ .
-
-# switch back to source root
-cd -
-
 # Prepare app_staging for fluxcd package
-rm -f %{app_staging}/manifest.yaml
-
 cp -R fluxcd-manifests %{app_staging}/
 
 # calculate checksum of all files in app_staging
@@ -119,12 +98,7 @@ rm -fr %{app_staging}
 
 %install
 install -d -m 755 %{buildroot}/%{app_folder}
-install -p -D -m 755 %{_builddir}/%{app_tarball_armada} %{buildroot}/%{app_folder}
 install -p -D -m 755 %{_builddir}/%{app_tarball_fluxcd} %{buildroot}/%{app_folder}
-
-%files armada
-%defattr(-,root,root,-)
-%{app_folder}/%{app_tarball_armada}
 
 %files
 %defattr(-,root,root,-)
