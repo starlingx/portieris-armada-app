@@ -50,6 +50,7 @@
     parent: tox
     description: |
       Run pylint test for k8sapp_portieris
+    nodeset: ubuntu-bionic
     required-projects:
       - starlingx/config
       - starlingx/fault
