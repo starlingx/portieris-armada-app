@@ -3,3 +3,4 @@
 0003-add-toggle-to-reinstall-the-admission-webhook.patch
 0004-run-admission-webhooks-as-non-root.patch
 0005-add-toleration.patch
+0006-Add-toleration-to-deployment-and-jobs.patch
