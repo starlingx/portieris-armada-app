@@ -1,1 +1,0 @@
-stx-portieris-helm

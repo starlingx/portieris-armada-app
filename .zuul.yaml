@@ -30,7 +30,7 @@
     vars:
         tox_envlist: py39
         python_version: 3.9
-        tox_extra_args: -c python-k8sapp-portieris/k8sapp_portieris/tox.ini
+        tox_extra_args: -c python3-k8sapp-portieris/k8sapp_portieris/tox.ini
 
 - job:
     name: stx-portieris-armada-app-upload-git-mirror
@@ -57,10 +57,10 @@
       - starlingx/update
       - starlingx/utilities
     files:
-      - python-k8sapp-portieris/*
+      - python3-k8sapp-portieris/*
     vars:
       tox_envlist: pylint
-      tox_extra_args: -c python-k8sapp-portieris/k8sapp_portieris/tox.ini
+      tox_extra_args: -c python3-k8sapp-portieris/k8sapp_portieris/tox.ini
 
 - secret:
     name: stx-portieris-armada-app-github-secret

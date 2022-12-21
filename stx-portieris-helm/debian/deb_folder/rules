@@ -47,7 +47,7 @@ override_dh_auto_build:
 
 	# Copy the plugins: installed in the buildroot
 	mkdir -p $(STAGING)/plugins
-	cp /plugins/$(APP_NAME)/*.whl $(STAGING)/plugins
+	cp /plugins/*.whl $(STAGING)/plugins
 
 	# Prepare staging for fluxcd package
 	cp -R fluxcd-manifests $(STAGING)/

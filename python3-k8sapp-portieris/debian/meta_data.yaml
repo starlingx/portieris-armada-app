@@ -1,9 +1,7 @@
 ---
-debname: stx-portieris-helm
+debname: python3-k8sapp-portieris
 debver: 1.0-1
-src_path: stx-portieris-helm
-src_files:
-  - ${MY_REPO}/stx/helm-charts/psp-rolebinding/psp-rolebinding/helm-charts
+src_path: k8sapp_portieris
 revision:
   dist: $STX_DIST
   GITREVCOUNT:
