@@ -8,13 +8,15 @@ replicaCount: 3
 namespace: portieris
 images:
   tags:
-    portieris: docker.io/starlingx/portieris:stx.5.0-v0.7.0
+    portieris: icr.io/portieris/portieris:v0.13.1
 image:
-  host: registry.local:9001/docker.io/starlingx
+  host: registry.local:9001/icr.io/portieris
+  pullSecret: default-registry-key
   image: portieris
-  tags: stx.5.0-v0.7.0
-  tag: stx.5.0-v0.7.0
-IBMContainerService: false
+  tag: v0.13.1
+tolerations:
+  - key: "node-role.kubernetes.io/master"
+    operator: "Exists"
+    effect: "NoSchedule"
 SkipSecretCreation: true
 UseCertManager: true
-
