@@ -3,7 +3,7 @@
 
 export ROOT = debian/tmp
 export CHART_FOLDER = $(ROOT)/usr/lib/helm
-export PORTIERIS_VERSION = 0.7.0
+export PORTIERIS_VERSION = v0.13.1
 export PORTIERIS_TARBALL = portieris-$(PORTIERIS_VERSION).tgz
 
 %:
