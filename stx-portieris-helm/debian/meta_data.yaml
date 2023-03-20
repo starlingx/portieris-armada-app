@@ -6,6 +6,9 @@ src_files:
   - ${MY_REPO}/stx/helm-charts/psp-rolebinding/psp-rolebinding/helm-charts
 revision:
   dist: $STX_DIST
+  stx_patch: 3
+  FILES_GITREVCOUNT:
+    - d0c56528d291dacd739c47774359a3bbb3e1c1b4
   GITREVCOUNT:
     SRC_DIR: ${MY_REPO}/stx/portieris-armada-app
-    BASE_SRCREV: b6f2024cc2c31f7562a31aebc46f0bc490bde6f6
+    BASE_SRCREV: b2f895c371539899f7c9543c9c5dba8a897a1be3

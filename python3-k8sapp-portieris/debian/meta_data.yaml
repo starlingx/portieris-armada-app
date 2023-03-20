@@ -4,6 +4,7 @@ debver: 1.0-1
 src_path: k8sapp_portieris
 revision:
   dist: $STX_DIST
+  stx_patch: 10
   GITREVCOUNT:
     SRC_DIR: ${MY_REPO}/stx/portieris-armada-app
-    BASE_SRCREV: b6f2024cc2c31f7562a31aebc46f0bc490bde6f6
+    BASE_SRCREV: 0677d5def2b04195ff02f191702555f2d8bca96d 
