@@ -16,6 +16,7 @@ from sysinv.common import constants
 from sysinv.common import exception
 from sysinv.helm import lifecycle_base as base
 from sysinv.helm.lifecycle_hook import LifecycleHookInfo
+import yaml
 
 LOG = logging.getLogger(__name__)
 
@@ -34,6 +35,11 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
 
         """
         if hook_info.lifecycle_type == constants.APP_LIFECYCLE_TYPE_OPERATION:
+            if hook_info.operation == constants.APP_APPLY_OP:
+                if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_POST:
+                    return self.post_apply(app_op, app, hook_info)
+
+        if hook_info.lifecycle_type == constants.APP_LIFECYCLE_TYPE_OPERATION:
             if hook_info.operation == constants.APP_BACKUP:
                 if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_PRE:
                     return self.pre_backup(app_op, app)
@@ -51,6 +57,62 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         super(PortierisAppLifecycleOperator, self).app_lifecycle_actions(
             context, conductor_obj, app_op, app, hook_info
         )
+
+    def post_apply(self, app_op, app, hook_info):
+        """Pre Apply actions
+
+        Creates the local registry secret and migrates helm user overrides
+        from one chart name to another
+
+        :param app_op: AppOperator object
+        :param app: AppOperator.Application object
+        :param hook_info: LifecycleHookInfo object
+        """
+        LOG.info(
+            "Executing post_apply for {} app".format(constants.HELM_APP_PORTIERIS)
+        )
+
+        dbapi_instance = app_op._dbapi
+        db_app_id = dbapi_instance.kube_app_get(app.name).id
+
+        client_core = app_op._kube._get_kubernetesclient_core()
+        component_constant = app_constants.HELM_COMPONENT_LABEL_PORTIERIS
+
+        # chart overrides
+        chart_overrides = self._get_helm_user_overrides(
+            dbapi_instance,
+            db_app_id)
+
+        override_label = {}
+
+        # Namespaces variables
+        namespace = client_core.read_namespace(app_constants.HELM_APP_PORTIERIS)
+
+        # Old namespace variable
+        old_namespace_label = (namespace.metadata.labels.get(component_constant)
+                               if component_constant in namespace.metadata.labels
+                               else None)
+
+        if component_constant in chart_overrides:
+            # User Override variables
+            dict_chart_overrides = yaml.safe_load(chart_overrides)
+            override_label = dict_chart_overrides.get(component_constant)
+
+        if override_label == 'application':
+            namespace.metadata.labels.update({component_constant: 'application'})
+            app_op._kube.kube_patch_namespace(app_constants.HELM_APP_PORTIERIS, namespace)
+        elif override_label == 'platform':
+            namespace.metadata.labels.update({component_constant: 'platform'})
+            app_op._kube.kube_patch_namespace(app_constants.HELM_APP_PORTIERIS, namespace)
+        elif not override_label:
+            namespace.metadata.labels.update({component_constant: 'platform'})
+            app_op._kube.kube_patch_namespace(app_constants.HELM_APP_PORTIERIS, namespace)
+        else:
+            LOG.info(f'WARNING: Namespace label {override_label} not supported')
+
+        namespace_label = namespace.metadata.labels.get(component_constant)
+        if old_namespace_label != namespace_label:
+            self._delete_portieris_pods(app_op, client_core)
 
     def pre_backup(self, app_op, app):
         LOG.debug(
@@ -179,3 +241,15 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         self._update_helm_user_overrides(
             dbapi_instance, db_app_id, "\n".join([portieris_override] + other_overrides)
         )
+
+    def _delete_portieris_pods(self, app_op, client_core):
+        # pod list
+        pods = client_core.list_namespaced_pod(app_constants.HELM_NS_PORTIERIS)
+
+        # Delete pods to force restart when it have any change in namespace_label
+        for pod in pods.items:
+            app_op._kube.kube_delete_pod(
+                name=pod.metadata.name,
+                namespace=app_constants.HELM_NS_PORTIERIS,
+                grace_periods_seconds=0
+            )
