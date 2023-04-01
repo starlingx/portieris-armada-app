@@ -9,5 +9,4 @@
 HELM_APP_PORTIERIS = 'portieris'
 HELM_CHART_PORTIERIS = 'portieris'
 HELM_CHART_PORTIERIS_CERTS = 'portieris-certs'
-HELM_CHART_PSP_ROLEBINDING = 'portieris-psp-rolebinding'
 HELM_NS_PORTIERIS = 'portieris'

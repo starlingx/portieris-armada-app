@@ -28,7 +28,6 @@ override_dh_auto_build:
 	# Create the TGZ file.
 	cd helm-charts && helm lint portieris-certs
 	cd helm-charts && helm package portieris-certs
-	cd helm-charts && $(MAKE) psp-rolebinding
 
 	# Terminate the helm chart server.
 	pkill chartmuseum
@@ -37,7 +36,6 @@ override_dh_auto_build:
 	mkdir -p $(STAGING)
 	cp files/metadata.yaml $(STAGING)
 	mkdir -p $(STAGING)/charts
-	cp helm-charts/*.tgz $(STAGING)/charts
 	cp $(HELM_FOLDER)/portieris*.tgz $(STAGING)/charts
 
 	# Populate metadata.

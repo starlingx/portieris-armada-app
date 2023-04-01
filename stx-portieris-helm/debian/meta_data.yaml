@@ -2,13 +2,9 @@
 debname: stx-portieris-helm
 debver: 1.0-1
 src_path: stx-portieris-helm
-src_files:
-  - ${MY_REPO}/stx/helm-charts/psp-rolebinding/psp-rolebinding/helm-charts
 revision:
   dist: $STX_DIST
   stx_patch: 3
-  FILES_GITREVCOUNT:
-    - d0c56528d291dacd739c47774359a3bbb3e1c1b4
   GITREVCOUNT:
     SRC_DIR: ${MY_REPO}/stx/portieris-armada-app
     BASE_SRCREV: b2f895c371539899f7c9543c9c5dba8a897a1be3
