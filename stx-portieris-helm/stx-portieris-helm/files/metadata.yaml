@@ -1,4 +1,6 @@
 maintain_user_overrides: true
+upgrades:
+  auto_update: true
 
 app_name: @APP_NAME@
 app_version: @APP_VERSION@
