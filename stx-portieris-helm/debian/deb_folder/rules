@@ -36,6 +36,7 @@ override_dh_auto_build:
 	mkdir -p $(STAGING)
 	cp files/metadata.yaml $(STAGING)
 	mkdir -p $(STAGING)/charts
+	cp helm-charts/portieris*.tgz $(STAGING)/charts
 	cp $(HELM_FOLDER)/portieris*.tgz $(STAGING)/charts
 
 	# Populate metadata.
