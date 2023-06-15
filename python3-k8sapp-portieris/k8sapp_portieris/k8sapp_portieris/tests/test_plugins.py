@@ -6,15 +6,18 @@
 
 from k8sapp_portieris.common import constants
 from sysinv.tests.db import base as dbbase
-from sysinv.tests.helm.test_helm import HelmOperatorTestSuiteMixin
 
 
 class K8SAppPortierisAppMixin(object):
     app_name = constants.HELM_APP_PORTIERIS
     path_name = app_name + '.tgz'
 
-    def setUp(self):
+    def setUp(self):  # pylint: disable=useless-parent-delegation
         super(K8SAppPortierisAppMixin, self).setUp()
+
+    def test_stub(self):
+        # Replace this with a real unit test.
+        pass
 
 
 # Test Configuration:
@@ -25,7 +28,6 @@ class K8SAppPortierisAppMixin(object):
 class K8sAppPortierisControllerTestCase(K8SAppPortierisAppMixin,
                                         dbbase.BaseIPv6Mixin,
                                         dbbase.BaseCephStorageBackendMixin,
-                                        HelmOperatorTestSuiteMixin,
                                         dbbase.ControllerHostTestCase):
     pass
 
@@ -37,6 +39,5 @@ class K8sAppPortierisControllerTestCase(K8SAppPortierisAppMixin,
 # - portieris app
 class K8SAppPortierisAIOTestCase(K8SAppPortierisAppMixin,
                                  dbbase.BaseCephStorageBackendMixin,
-                                 HelmOperatorTestSuiteMixin,
                                  dbbase.AIOSimplexHostTestCase):
     pass

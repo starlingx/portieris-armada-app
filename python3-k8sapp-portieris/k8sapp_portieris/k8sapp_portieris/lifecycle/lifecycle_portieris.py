@@ -58,7 +58,7 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
             context, conductor_obj, app_op, app, hook_info
         )
 
-    def post_apply(self, app_op, app, hook_info):
+    def post_apply(self, app_op, app, hook_info):  # pylint: disable=unused-argument
         """Pre Apply actions
 
         Creates the local registry secret and migrates helm user overrides
