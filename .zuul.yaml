@@ -5,18 +5,22 @@
         - openstack-tox-linters
         - k8sapp-portieris-tox-py39
         - k8sapp-portieris-tox-pylint
+        - k8sapp-portieris-tox-flake8
+        - k8sapp-portieris-tox-metadata
     gate:
       jobs:
         - openstack-tox-linters
         - k8sapp-portieris-tox-py39
         - k8sapp-portieris-tox-pylint
+        - k8sapp-portieris-tox-flake8
+        - k8sapp-portieris-tox-metadata
     post:
       jobs:
         - stx-portieris-armada-app-upload-git-mirror
 
 - job:
     name: k8sapp-portieris-tox-py39
-    parent: tox-py39
+    parent: openstack-tox-py39
     description: |
         Run py39 test for portieris
     nodeset: debian-bullseye
@@ -25,12 +29,12 @@
       - starlingx/fault
       - starlingx/update
       - starlingx/utilities
+      - starlingx/root
     files:
       - python3-k8sapp-portieris/*
     vars:
-        tox_envlist: py39
-        python_version: 3.9
         tox_extra_args: -c python3-k8sapp-portieris/k8sapp_portieris/tox.ini
+        tox_constraints_file: '{{ ansible_user_dir }}/src/opendev.org/starlingx/root/build-tools/requirements/debian/upper-constraints.txt'
 
 - job:
     name: k8sapp-portieris-tox-pylint
@@ -43,11 +47,51 @@
       - starlingx/fault
       - starlingx/update
       - starlingx/utilities
+      - starlingx/root
     files:
       - python3-k8sapp-portieris/*
     vars:
       tox_envlist: pylint
       tox_extra_args: -c python3-k8sapp-portieris/k8sapp_portieris/tox.ini
+      tox_constraints_file: '{{ ansible_user_dir }}/src/opendev.org/starlingx/root/build-tools/requirements/debian/upper-constraints.txt'
+
+- job:
+    name: k8sapp-portieris-tox-flake8
+    parent: tox
+    description: |
+      Run flake8 test for k8sapp_portieris
+    nodeset: debian-bullseye
+    required-projects:
+      - starlingx/config
+      - starlingx/fault
+      - starlingx/update
+      - starlingx/utilities
+      - starlingx/root
+    files:
+      - python3-k8sapp-portieris/*
+    vars:
+      tox_envlist: flake8
+      tox_extra_args: -c python3-k8sapp-portieris/k8sapp_portieris/tox.ini
+      tox_constraints_file: '{{ ansible_user_dir }}/src/opendev.org/starlingx/root/build-tools/requirements/debian/upper-constraints.txt'
+
+- job:
+    name: k8sapp-portieris-tox-metadata
+    parent: tox
+    description: |
+      Run metadata test for k8sapp_portieris
+    nodeset: debian-bullseye
+    required-projects:
+      - starlingx/config
+      - starlingx/fault
+      - starlingx/update
+      - starlingx/utilities
+      - starlingx/root
+    files:
+      - python3-k8sapp-portieris/*
+    vars:
+      tox_envlist: metadata
+      tox_extra_args: -c python3-k8sapp-portieris/k8sapp_portieris/tox.ini
+      tox_constraints_file: '{{ ansible_user_dir }}/src/opendev.org/starlingx/root/build-tools/requirements/debian/upper-constraints.txt'
 
 - job:
     name: stx-portieris-armada-app-upload-git-mirror
