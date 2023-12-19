@@ -6,7 +6,6 @@ dl_path:
   url: https://github.com/IBM/portieris/archive/refs/tags/v0.13.1.tar.gz
   md5sum: 3c5b2a092172dfd0fd51d4319305680f
 src_files:
-  - files/metadata.yaml
   - files/index.yaml
   - files/repositories.yaml
 revision:
