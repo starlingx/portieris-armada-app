@@ -8,14 +8,17 @@ replicaCount: 3
 namespace: portieris
 images:
   tags:
-    portieris: icr.io/portieris/portieris:v0.13.1
+    portieris: icr.io/portieris/portieris:v0.13.10
 image:
   host: registry.local:9001/icr.io/portieris
   pullSecret: default-registry-key
   image: portieris
-  tag: v0.13.1
+  tag: v0.13.10
 tolerations:
   - key: "node-role.kubernetes.io/master"
+    operator: "Exists"
+    effect: "NoSchedule"
+  - key: "node-role.kubernetes.io/control-plane"
     operator: "Exists"
     effect: "NoSchedule"
 SkipSecretCreation: true
