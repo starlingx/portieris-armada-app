@@ -86,8 +86,6 @@
       - starlingx/update
       - starlingx/utilities
       - starlingx/root
-    files:
-      - python3-k8sapp-portieris/*
     vars:
       tox_envlist: metadata
       tox_extra_args: -c python3-k8sapp-portieris/k8sapp_portieris/tox.ini
