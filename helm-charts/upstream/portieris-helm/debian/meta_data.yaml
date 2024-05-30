@@ -1,16 +1,18 @@
 ---
 debname: portieris-helm
-debver: 1.0-1
+debver: 0.13-10
 dl_path:
   name: portieris-0.13.10.tgz
   url: https://github.com/IBM/portieris/archive/refs/tags/v0.13.10.tar.gz
   sha256sum: 8377029dc885bd50ff459ddc0d01aa274921b0024cc63bf969f2e72bf4b56f11
 src_files:
+  - files/Makefile
   - files/index.yaml
   - files/repositories.yaml
 revision:
   dist: $STX_DIST
+  stx_patch: 1
   PKG_GITREVCOUNT: true
   GITREVCOUNT:
-    SRC_DIR: ${MY_REPO}/stx/portieris-armada-app/portieris-helm/files
+    SRC_DIR: ${MY_REPO}/stx/portieris-armada-app/helm-charts/upstream/portieris-helm/files
     BASE_SRCREV: b2f895c371539899f7c9543c9c5dba8a897a1be3

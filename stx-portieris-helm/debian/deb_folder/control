@@ -3,11 +3,9 @@ Section: libs
 Priority: optional
 Maintainer: StarlingX Developers <starlingx-discuss@lists.starlingx.io>
 Build-Depends: debhelper-compat (= 13),
- chartmuseum,
  helm,
  portieris-helm,
- procps,
- python3-k8sapp-portieris,
+ portieris-certs-helm,
  python3-k8sapp-portieris-wheels,
  build-info
 Standards-Version: 4.5.1
@@ -17,6 +15,6 @@ Package: stx-portieris-helm
 Section: libs
 Architecture: any
 Depends: ${misc:Depends}
-Description: StarlingX Portieris FluxCD Helm Charts
- This package contains FluxCD helm charts for the portieris
+Description: StarlingX Portieris FluxCD application.
+ This package contains FluxCD manifests for the portieris
  application.

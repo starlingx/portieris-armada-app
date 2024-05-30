@@ -1,0 +1,10 @@
+---
+debname: portieris-certs-helm
+debver: 0.1-0
+src_path: portieris-certs-helm
+revision:
+  dist: $STX_DIST
+  PKG_GITREVCOUNT: true
+  GITREVCOUNT:
+    SRC_DIR: ${MY_REPO}/stx/portieris-armada-app/helm-charts/custom/portieris-certs-helm
+    BASE_SRCREV: 419816d74a38e978a2743365052073719dc0cc8b

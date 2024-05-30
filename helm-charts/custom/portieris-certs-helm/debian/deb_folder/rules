@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+# export DH_VERBOSE = 1
+
+export DEB_VERSION = $(shell dpkg-parsechangelog | egrep '^Version:' | cut -f 2 -d ' ')
+export PATCH_VERSION = $(shell echo $(DEB_VERSION) | cut -f 4 -d '.')
+export PORTIERIS_BASE_VERSION = $(shell echo $(DEB_VERSION) | cut -f 1 -d '-')
+export PORTIERIS_VERSION = $(PORTIERIS_BASE_VERSION).$(PATCH_VERSION)
+
+export ROOT = debian/tmp
+export CHART_FOLDER = $(ROOT)/usr/lib/helm
+
+%:
+	dh $@
+
+override_dh_auto_build:
+
+	make CHART_VERSION=$(PORTIERIS_VERSION) portieris-certs
+
+override_dh_auto_install:
+	# Install the app tar file.
+	install -d -m 755 $(CHART_FOLDER)
+	install -p -D -m 755 portieris-certs*.tgz $(CHART_FOLDER)

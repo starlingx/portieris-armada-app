@@ -1,3 +1,4 @@
-portieris-helm
+helm-charts/upstream/portieris-helm
+helm-charts/custom/portieris-certs-helm
 python3-k8sapp-portieris
 stx-portieris-helm

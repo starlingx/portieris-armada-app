@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+# export DH_VERBOSE = 1
+
+export DEB_VERSION = $(shell dpkg-parsechangelog | egrep '^Version:' | cut -f 2 -d ' ')
+export PATCH_VERSION = $(shell echo $(DEB_VERSION) | cut -f 4 -d '.')
+export PORTIERIS_BASE_VERSION = $(shell echo $(DEB_VERSION) | sed 's/-/./' | cut -d '.' -f 1-3)
+export PORTIERIS_VERSION = $(PORTIERIS_BASE_VERSION)+STX.$(PATCH_VERSION)
+export PORTIERIS_TARBALL = portieris-$(PORTIERIS_VERSION).tgz
+
+export ROOT = debian/tmp
+export CHART_FOLDER = $(ROOT)/usr/lib/helm
+
+%:
+	dh $@
+
+override_dh_auto_build:
+
+	cp Makefile helm
+	cd helm && make CHART_VERSION=$(PORTIERIS_VERSION) portieris
+
+override_dh_auto_install:
+	# Install the app tar file.
+	install -d -m 755 $(CHART_FOLDER)
+	install -p -D -m 755 helm/$(PORTIERIS_TARBALL) $(CHART_FOLDER)

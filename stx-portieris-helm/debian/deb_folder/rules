@@ -19,25 +19,27 @@ export STAGING = staging
 	dh $@
 
 override_dh_auto_build:
-	# Host a server for the helm charts.
-	chartmuseum --debug --port=8879 --context-path='/charts' --storage="local" \
-		--storage-local-rootdir="." &
-	sleep 2
-	helm repo add local http://localhost:8879/charts
-
-	# Create the TGZ file.
-	cd helm-charts && helm lint portieris-certs
-	cd helm-charts && helm package portieris-certs
-
-	# Terminate the helm chart server.
-	pkill chartmuseum
 
 	# Setup the staging directory.
 	mkdir -p $(STAGING)
 	cp files/metadata.yaml $(STAGING)
 	mkdir -p $(STAGING)/charts
-	cp helm-charts/portieris*.tgz $(STAGING)/charts
 	cp $(HELM_FOLDER)/portieris*.tgz $(STAGING)/charts
+
+	# Prepare staging for fluxcd package
+	cp -R fluxcd-manifests $(STAGING)/
+
+	# Adjust the helmrelease yamls based on the chart versions
+	for c in $(STAGING)/charts/*; do \
+		chart=$$(basename $$c .tgz); \
+		chart_name=$${chart%-*}; \
+		chart_version=$${chart##*-}; \
+		echo "Found $$chart; name: $$chart_name, version: $$chart_version"; \
+		chart_manifest=$$(find $(STAGING)/fluxcd-manifests/$$chart_name -name helmrelease.yaml -exec grep -q $$chart_name {} \; -print); \
+		echo "Updating manifest: $$chart_manifest"; \
+		sed -i "s/REPLACE_HELM_CHART_VERSION/$$chart_version/g" $$chart_manifest; \
+		grep version $$chart_manifest; \
+	done
 
 	# Populate metadata.
 	sed -i 's/APP_REPLACE_NAME/$(APP_NAME)/g' $(STAGING)/metadata.yaml
@@ -47,9 +49,6 @@ override_dh_auto_build:
 	# Copy the plugins: installed in the buildroot
 	mkdir -p $(STAGING)/plugins
 	cp /plugins/*.whl $(STAGING)/plugins
-
-	# Prepare staging for fluxcd package
-	cp -R fluxcd-manifests $(STAGING)/
 
 	# calculate checksum of all files in staging for the fluxcd app
 	cd $(STAGING) && find . -type f ! -name '*.md5' -print0 | xargs -0 md5sum > checksum.md5
