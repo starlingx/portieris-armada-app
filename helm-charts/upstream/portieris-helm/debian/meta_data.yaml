@@ -2,9 +2,9 @@
 debname: portieris-helm
 debver: 0.13-10
 dl_path:
-  name: portieris-0.13.10.tgz
-  url: https://github.com/IBM/portieris/archive/refs/tags/v0.13.10.tar.gz
-  sha256sum: 8377029dc885bd50ff459ddc0d01aa274921b0024cc63bf969f2e72bf4b56f11
+  name: portieris-0.13.16.tgz
+  url: https://github.com/IBM/portieris/archive/refs/tags/v0.13.16.tar.gz
+  sha256sum: a1bd39cf9565aa85306b65fc8af937cb8529daaea6dbf163166226170a4fc81e
 src_files:
   - files/Makefile
   - files/index.yaml

@@ -8,12 +8,12 @@ replicaCount: 3
 namespace: portieris
 images:
   tags:
-    portieris: icr.io/portieris/portieris:v0.13.10
+    portieris: icr.io/portieris/portieris:v0.13.16
 image:
   host: registry.local:9001/icr.io/portieris
   pullSecret: default-registry-key
   image: portieris
-  tag: v0.13.10
+  tag: v0.13.16
 tolerations:
   - key: "node-role.kubernetes.io/master"
     operator: "Exists"
