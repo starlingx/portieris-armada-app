@@ -1,0 +1,29 @@
+From e0073c8e0d306d3d33b30bc9a16a73e21b00dc7b Mon Sep 17 00:00:00 2001
+From: Tae Park <tae.park@windriver.com>
+Date: Tue, 27 Aug 2024 17:06:33 -0400
+Subject: [PATCH] Hardcode app label selector
+
+Hardcoding the selector.matchLabels.app to "portieris" to match
+spec.template.metadata.labels.app value in deployment.yaml. This should
+allow the portieris pods to be cordonned properly, so that the
+kubernetes upgrades can be done.
+
+Signed-off-by: Tae Park <tae.park@windriver.com>
+---
+ helm/portieris/templates/pdb.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/helm/portieris/templates/pdb.yaml b/helm/portieris/templates/pdb.yaml
+index dee1243..526e7e1 100644
+--- a/helm/portieris/templates/pdb.yaml
++++ b/helm/portieris/templates/pdb.yaml
+@@ -17,5 +17,5 @@ spec:
+ {{- end }}
+   selector:
+     matchLabels:
+-      app: {{ .Release.Name }}
++      app: portieris
+ {{- end }}
+-- 
+2.25.1
+
