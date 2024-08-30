@@ -1,2 +1,3 @@
 0001-Add-permissive-cluster-policy-by-default.patch
 0002-Hardcode-app-label-selector.patch
+0003-Adjust-liveness-readiness-probe-configurations.patch

@@ -21,5 +21,13 @@ tolerations:
   - key: "node-role.kubernetes.io/control-plane"
     operator: "Exists"
     effect: "NoSchedule"
+livenessProbe:
+  initialDelaySeconds: 17
+  periodSeconds: 19
+  timeoutSeconds: 11
+readinessProbe:
+  initialDelaySeconds: 17
+  periodSeconds: 19
+  timeoutSeconds: 11
 SkipSecretCreation: true
 UseCertManager: true

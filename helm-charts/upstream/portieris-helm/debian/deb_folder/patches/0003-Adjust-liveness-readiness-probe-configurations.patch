@@ -1,0 +1,64 @@
+From 3fc69db274f3d0b5480fc9cc409ddeca21ad0b73 Mon Sep 17 00:00:00 2001
+From: Tae Park <tae.park@windriver.com>
+Date: Fri, 30 Aug 2024 15:07:37 -0400
+Subject: [PATCH] Adjust liveness/readiness probe configurations
+
+Adding support for configuring liveness and readiness probe times, and
+changing the values from initial settings to lower the CPU usage. The
+new values are configured in the static override file.
+
+Signed-off-by: Tae Park <tae.park@windriver.com>
+---
+ helm/portieris/templates/deployment.yaml | 10 ++++++----
+ helm/portieris/values.yaml               | 12 ++++++++++++
+ 2 files changed, 18 insertions(+), 4 deletions(-)
+
+diff --git a/helm/portieris/templates/deployment.yaml b/helm/portieris/templates/deployment.yaml
+index 826fdba..5c38dd9 100644
+--- a/helm/portieris/templates/deployment.yaml
++++ b/helm/portieris/templates/deployment.yaml
+@@ -56,15 +56,17 @@ spec:
+               port: 8000
+               path: "/health/liveness"
+               scheme: HTTPS
+-            initialDelaySeconds: 10
+-            timeoutSeconds: 10
++            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
++            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
++            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+           readinessProbe:
+             httpGet:
+               port: 8000
+               path: "/health/readiness"
+               scheme: HTTPS
+-            initialDelaySeconds: 10
+-            timeoutSeconds: 10
++            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
++            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
++            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+           env:
+           resources:
+ {{ toYaml .Values.resources | indent 12 }}
+diff --git a/helm/portieris/values.yaml b/helm/portieris/values.yaml
+index b4be5dd..3e1fb20 100644
+--- a/helm/portieris/values.yaml
++++ b/helm/portieris/values.yaml
+@@ -135,3 +135,15 @@ podDisruptionBudget:
+ 
+ # Service selector includes release in addition to app
+ selectByRelease: true
++
++# Default values for liveness probe
++livenessProbe:
++  initialDelaySeconds: 17
++  periodSeconds: 19
++  timeoutSeconds: 11
++
++# Default values for readiness probe
++readinessProbe:
++  initialDelaySeconds: 17
++  periodSeconds: 19
++  timeoutSeconds: 11
+-- 
+2.25.1
+
