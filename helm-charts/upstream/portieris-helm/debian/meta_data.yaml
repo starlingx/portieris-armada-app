@@ -1,6 +1,6 @@
 ---
 debname: portieris-helm
-debver: 0.13-10
+debver: 0.13-16
 dl_path:
   name: portieris-0.13.16.tgz
   url: https://github.com/IBM/portieris/archive/refs/tags/v0.13.16.tar.gz
