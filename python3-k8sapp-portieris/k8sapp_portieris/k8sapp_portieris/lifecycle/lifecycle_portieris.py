@@ -21,6 +21,8 @@ import yaml
 LOG = logging.getLogger(__name__)
 
 REAPPLY_PORTIERIS_WEBHOOK_OVERRIDE = "ReapplyAdmissionWebhook"
+POST_UPGRADE_POLICY_OVERRIDE = 'PostUpgradePolicy'
+NULL_VALUE = '~'
 
 
 class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
@@ -35,38 +37,123 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
 
         """
         if hook_info.lifecycle_type == constants.APP_LIFECYCLE_TYPE_OPERATION:
+            # Apply
             if hook_info.operation == constants.APP_APPLY_OP:
                 if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_POST:
-                    return self.post_apply(app_op, app, hook_info)
+                    return self.post_apply(app_op, app)
 
-        if hook_info.lifecycle_type == constants.APP_LIFECYCLE_TYPE_OPERATION:
+            # B&R
             if hook_info.operation == constants.APP_BACKUP:
                 if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_PRE:
                     return self.pre_backup(app_op, app)
 
-        if hook_info.lifecycle_type == constants.APP_LIFECYCLE_TYPE_OPERATION:
-            if hook_info.operation == constants.APP_BACKUP:
                 if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_POST:
                     return self.post_backup(app_op, app)
 
-        if hook_info.lifecycle_type == constants.APP_LIFECYCLE_TYPE_OPERATION:
             if hook_info.operation == constants.APP_RESTORE:
                 if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_POST:
                     return self.post_restore(app_op, app)
+
+        # Update
+        if hook_info.lifecycle_type == constants.APP_LIFECYCLE_TYPE_SEMANTIC_CHECK:
+            # Prepare
+            if hook_info.mode == constants.APP_LIFECYCLE_MODE_MANUAL:
+                if hook_info.operation == constants.APP_UPDATE_OP:
+                    if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_PRE:
+                        return self.pre_update(app_op, app)
+            # Cleanup
+            if hook_info.mode == constants.APP_LIFECYCLE_MODE_AUTO:
+                if hook_info.operation == constants.APP_UPDATE_OP:
+                    if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_PRE:
+                        return self.clean_update(app_op, app)
 
         super(PortierisAppLifecycleOperator, self).app_lifecycle_actions(
             context, conductor_obj, app_op, app, hook_info
         )
 
-    def post_apply(self, app_op, app, hook_info):  # pylint: disable=unused-argument
-        """Pre Apply actions
+    def pre_update(self, app_op, app):
+        """Post update actions
+
+        Change the MutatingWebhookConfiguration 'failurePolicy' to Ignore. The default
+        value 'Fail' can cause issues during upgrades.
+
+        :param app_op: AppOperator object
+        :param app: AppOperator.Application object
+        """
+        LOG.debug(
+            "Executing pre_update for {} app".format(constants.HELM_APP_PORTIERIS)
+        )
+        dbapi_instance = app_op._dbapi
+        db_app_id = dbapi_instance.kube_app_get(app.name).id
+        user_overrides = yaml.safe_load(
+            self._get_helm_user_overrides(dbapi_instance, db_app_id)) or {}
+
+        postUpgradePolicy = user_overrides.get('webHooks', {}).get('failurePolicy', None)
+        if postUpgradePolicy is None:
+            postUpgradePolicy = NULL_VALUE
+        else:
+            LOG.debug("failurePolicy original value is %s" % postUpgradePolicy)
+
+        user_overrides.update({POST_UPGRADE_POLICY_OVERRIDE: postUpgradePolicy})
+        webhook_overrides = user_overrides.get('webHooks', {})
+        webhook_overrides.update({'failurePolicy': 'Ignore'})
+        user_overrides['webHooks'] = webhook_overrides
+
+        self._update_helm_user_overrides(
+            dbapi_instance, db_app_id, yaml.dump(user_overrides, default_flow_style=False))
+
+    def clean_update(self, app_op, app):
+        """Clean update changes
+
+        Reapply the values changed in the MutatingWebhookConfiguration during pre update.
+
+        :param app_op: AppOperator object
+        :param app: AppOperator.Application object
+        """
+        dbapi_instance = app_op._dbapi
+        db_app_id = dbapi_instance.kube_app_get(app.name).id
+        user_overrides = yaml.safe_load(
+            self._get_helm_user_overrides(dbapi_instance, db_app_id)) or {}
+
+        postUpgradePolicy = user_overrides.pop(POST_UPGRADE_POLICY_OVERRIDE, None)
+        if postUpgradePolicy is None:
+            return
+
+        LOG.info(
+            "Executing post_update clean for {} app".format(constants.HELM_APP_PORTIERIS)
+        )
+
+        if postUpgradePolicy == NULL_VALUE:
+            LOG.info("Removing webhook temporary override for failurePolicy.")
+            if len(user_overrides.get('webHooks', {})) <= 1:
+                user_overrides.pop('webHooks', None)
+            else:
+                user_overrides['webHooks'].pop('failurePolicy', None)
+        else:
+            LOG.info("Restoring webhook override failurePolicy: %s" % postUpgradePolicy)
+            webhook_overrides = user_overrides.get('webHooks', {})
+            webhook_overrides.update({'failurePolicy': postUpgradePolicy})
+            user_overrides['webHooks'] = webhook_overrides
+
+        self._update_helm_user_overrides(
+            dbapi_instance, db_app_id, yaml.dump(user_overrides, default_flow_style=False))
+
+        # Reapply portieris
+        LOG.info("Cleaned update overrides. Reapplying portieris.")
+        lifecycle_hook_info = LifecycleHookInfo()
+        lifecycle_hook_info.operation = constants.APP_UPDATE_OP
+        app_op.perform_app_apply(
+            app._kube_app, constants.APP_LIFECYCLE_MODE_AUTO, lifecycle_hook_info
+        )
+
+    def post_apply(self, app_op, app):
+        """Post Apply actions
 
         Creates the local registry secret and migrates helm user overrides
         from one chart name to another
 
         :param app_op: AppOperator object
         :param app: AppOperator.Application object
-        :param hook_info: LifecycleHookInfo object
         """
         LOG.info(
             "Executing post_apply for {} app".format(constants.HELM_APP_PORTIERIS)
@@ -224,6 +311,8 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         return overrides.user_overrides or ""
 
     def _update_helm_user_overrides(self, dbapi_instance, db_app_id, updated_overrides):
+        if updated_overrides.rstrip('\n') == '{}':
+            updated_overrides = None
         dbapi_instance.helm_override_update(
             app_id=db_app_id,
             name=app_constants.HELM_CHART_PORTIERIS,
