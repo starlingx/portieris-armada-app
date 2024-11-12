@@ -311,7 +311,7 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         return overrides.user_overrides or ""
 
     def _update_helm_user_overrides(self, dbapi_instance, db_app_id, updated_overrides):
-        if updated_overrides.rstrip('\n') == '{}':
+        if updated_overrides is not None and updated_overrides.rstrip('\n') == '{}':
             updated_overrides = None
         dbapi_instance.helm_override_update(
             app_id=db_app_id,
