@@ -15,6 +15,7 @@ from oslo_log import log as logging
 from sysinv.common import constants
 from sysinv.common import exception
 from sysinv.helm import lifecycle_base as base
+from sysinv.helm.lifecycle_constants import LifecycleConstants
 from sysinv.helm.lifecycle_hook import LifecycleHookInfo
 import yaml
 
@@ -36,35 +37,35 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         :param hook_info: LifecycleHookInfo object
 
         """
-        if hook_info.lifecycle_type == constants.APP_LIFECYCLE_TYPE_OPERATION:
+        if hook_info.lifecycle_type == LifecycleConstants.APP_LIFECYCLE_TYPE_OPERATION:
             # Apply
             if hook_info.operation == constants.APP_APPLY_OP:
-                if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_POST:
+                if hook_info.relative_timing == LifecycleConstants.APP_LIFECYCLE_TIMING_POST:
                     return self.post_apply(app_op, app)
 
             # B&R
             if hook_info.operation == constants.APP_BACKUP:
-                if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_PRE:
+                if hook_info.relative_timing == LifecycleConstants.APP_LIFECYCLE_TIMING_PRE:
                     return self.pre_backup(app_op, app)
 
-                if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_POST:
+                if hook_info.relative_timing == LifecycleConstants.APP_LIFECYCLE_TIMING_POST:
                     return self.post_backup(app_op, app)
 
             if hook_info.operation == constants.APP_RESTORE:
-                if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_POST:
+                if hook_info.relative_timing == LifecycleConstants.APP_LIFECYCLE_TIMING_POST:
                     return self.post_restore(app_op, app)
 
         # Update
-        if hook_info.lifecycle_type == constants.APP_LIFECYCLE_TYPE_SEMANTIC_CHECK:
+        if hook_info.lifecycle_type == LifecycleConstants.APP_LIFECYCLE_TYPE_SEMANTIC_CHECK:
             # Prepare
-            if hook_info.mode == constants.APP_LIFECYCLE_MODE_MANUAL:
+            if hook_info.mode == LifecycleConstants.APP_LIFECYCLE_MODE_MANUAL:
                 if hook_info.operation == constants.APP_UPDATE_OP:
-                    if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_PRE:
+                    if hook_info.relative_timing == LifecycleConstants.APP_LIFECYCLE_TIMING_PRE:
                         return self.pre_update(app_op, app)
             # Cleanup
-            if hook_info.mode == constants.APP_LIFECYCLE_MODE_AUTO:
+            if hook_info.mode == LifecycleConstants.APP_LIFECYCLE_MODE_AUTO:
                 if hook_info.operation == constants.APP_UPDATE_OP:
-                    if hook_info.relative_timing == constants.APP_LIFECYCLE_TIMING_PRE:
+                    if hook_info.relative_timing == LifecycleConstants.APP_LIFECYCLE_TIMING_PRE:
                         return self.clean_update(app_op, app)
 
         super(PortierisAppLifecycleOperator, self).app_lifecycle_actions(
@@ -143,7 +144,7 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         lifecycle_hook_info = LifecycleHookInfo()
         lifecycle_hook_info.operation = constants.APP_UPDATE_OP
         app_op.perform_app_apply(
-            app._kube_app, constants.APP_LIFECYCLE_MODE_AUTO, lifecycle_hook_info
+            app._kube_app, LifecycleConstants.APP_LIFECYCLE_MODE_AUTO, lifecycle_hook_info
         )
 
     def post_apply(self, app_op, app):
@@ -284,7 +285,7 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         lifecycle_hook_info = LifecycleHookInfo()
         lifecycle_hook_info.operation = constants.APP_APPLY_OP
         app_op.perform_app_apply(
-            app._kube_app, constants.APP_LIFECYCLE_MODE_AUTO, lifecycle_hook_info
+            app._kube_app, LifecycleConstants.APP_LIFECYCLE_MODE_AUTO, lifecycle_hook_info
         )
 
         # Clean portieris override
