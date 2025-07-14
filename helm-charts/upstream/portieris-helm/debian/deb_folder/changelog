@@ -1,3 +1,9 @@
+portieris-helm (0.13.28-1) unstable; urgency=medium
+
+  * Upversion Portieris to v0.13.28
+
+ --  Tae Park <tae.park@windriver.com>  Thu, 28 May 2025 16:26:53 -0400
+
 portieris-helm (0.13-16) unstable; urgency=medium
 
   * Upversion Portieris to v0.13.16
