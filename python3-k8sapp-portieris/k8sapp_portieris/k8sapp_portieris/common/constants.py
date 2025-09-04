@@ -8,6 +8,5 @@
 # These values match the names in the chart package's Chart.yaml
 HELM_APP_PORTIERIS = 'portieris'
 HELM_CHART_PORTIERIS = 'portieris'
-HELM_CHART_PORTIERIS_CERTS = 'portieris-certs'
 HELM_NS_PORTIERIS = 'portieris'
 HELM_COMPONENT_LABEL_PORTIERIS = 'app.starlingx.io/component'

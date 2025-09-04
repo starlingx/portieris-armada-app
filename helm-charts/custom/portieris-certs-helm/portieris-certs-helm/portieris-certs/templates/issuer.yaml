@@ -1,9 +1,0 @@
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  creationTimestamp: null
-  name: stx-portieris
-  namespace: portieris
-spec:
-  selfSigned: {}
-status: {}

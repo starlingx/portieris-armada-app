@@ -9,5 +9,4 @@ kind: Kustomization
 namespace: portieris
 resources:
   - base
-  - portieris-certs
   - portieris

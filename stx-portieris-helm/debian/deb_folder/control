@@ -5,7 +5,6 @@ Maintainer: StarlingX Developers <starlingx-discuss@lists.starlingx.io>
 Build-Depends: debhelper-compat (= 13),
  helm,
  portieris-helm,
- portieris-certs-helm,
  python3-k8sapp-portieris-wheels,
  build-info
 Standards-Version: 4.5.1
