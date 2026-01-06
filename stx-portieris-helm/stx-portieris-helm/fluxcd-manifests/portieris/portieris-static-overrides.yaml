@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2022 Wind River Systems, Inc.
+# Copyright (c) 2025 Wind River Systems, Inc.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -8,12 +8,12 @@ replicaCount: 3
 namespace: portieris
 images:
   tags:
-    portieris: icr.io/portieris/portieris:v0.13.16
+    portieris: icr.io/portieris/portieris:v0.13.28
 image:
   host: registry.local:9001/icr.io/portieris
   pullSecret: default-registry-key
   image: portieris
-  tag: v0.13.16
+  tag: v0.13.28
 tolerations:
   - key: "node-role.kubernetes.io/master"
     operator: "Exists"
@@ -29,5 +29,5 @@ readinessProbe:
   initialDelaySeconds: 17
   periodSeconds: 19
   timeoutSeconds: 11
-SkipSecretCreation: true
+SkipSecretCreation: false
 UseCertManager: true

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021 Wind River Systems, Inc.
+# Copyright (c) 2021,2025 Wind River Systems, Inc.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -17,6 +17,7 @@ from sysinv.common import exception
 from sysinv.helm import lifecycle_base as base
 from sysinv.helm.lifecycle_constants import LifecycleConstants
 from sysinv.helm.lifecycle_hook import LifecycleHookInfo
+import os
 import yaml
 
 LOG = logging.getLogger(__name__)
@@ -56,12 +57,13 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
                     return self.post_restore(app_op, app)
 
         # Update
-        if hook_info.lifecycle_type == LifecycleConstants.APP_LIFECYCLE_TYPE_SEMANTIC_CHECK:
+        if hook_info.lifecycle_type == LifecycleConstants.APP_LIFECYCLE_TYPE_RESOURCE:
             # Prepare
-            if hook_info.mode == LifecycleConstants.APP_LIFECYCLE_MODE_MANUAL:
-                if hook_info.operation == constants.APP_UPDATE_OP:
-                    if hook_info.relative_timing == LifecycleConstants.APP_LIFECYCLE_TIMING_PRE:
-                        return self.pre_update(app_op, app)
+            if hook_info.operation == constants.APP_UPDATE_OP:
+                if hook_info.relative_timing == LifecycleConstants.APP_LIFECYCLE_TIMING_PRE:
+                    return self.pre_update(app_op, app)
+
+        if hook_info.lifecycle_type == LifecycleConstants.APP_LIFECYCLE_TYPE_SEMANTIC_CHECK:
             # Cleanup
             if hook_info.mode == LifecycleConstants.APP_LIFECYCLE_MODE_AUTO:
                 if hook_info.operation == constants.APP_UPDATE_OP:
@@ -88,6 +90,10 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         db_app_id = dbapi_instance.kube_app_get(app.name).id
         user_overrides = yaml.safe_load(
             self._get_helm_user_overrides(dbapi_instance, db_app_id)) or {}
+
+        if user_overrides.get(POST_UPGRADE_POLICY_OVERRIDE, None) is not None:
+            LOG.info("Post-upgrade policy override already filled. Ignoring.")
+            return
 
         postUpgradePolicy = user_overrides.get('webHooks', {}).get('failurePolicy', None)
         if postUpgradePolicy is None:
@@ -116,6 +122,10 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         user_overrides = yaml.safe_load(
             self._get_helm_user_overrides(dbapi_instance, db_app_id)) or {}
 
+        if os.path.exists(constants.USM_UPGRADE_IN_PROGRESS):
+            LOG.info("Upgrade is in progress. Avoiding cleaning portieris update flag.")
+            return
+
         postUpgradePolicy = user_overrides.pop(POST_UPGRADE_POLICY_OVERRIDE, None)
         if postUpgradePolicy is None:
             return
@@ -142,7 +152,7 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         # Reapply portieris
         LOG.info("Cleaned update overrides. Reapplying portieris.")
         lifecycle_hook_info = LifecycleHookInfo()
-        lifecycle_hook_info.operation = constants.APP_UPDATE_OP
+        lifecycle_hook_info.operation = constants.APP_APPLY_OP
         app_op.perform_app_apply(
             app._kube_app, LifecycleConstants.APP_LIFECYCLE_MODE_AUTO, lifecycle_hook_info
         )
