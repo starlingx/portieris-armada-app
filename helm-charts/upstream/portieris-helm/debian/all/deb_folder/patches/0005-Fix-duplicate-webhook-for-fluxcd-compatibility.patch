@@ -1,0 +1,66 @@
+From 8cb0375947a7824f2e07d74dc8813983bc90a43b Mon Sep 17 00:00:00 2001
+From: David Bastos <david.barbosabastos@windriver.com>
+Date: Mon, 27 Apr 2026 18:25:18 -0300
+Subject: [PATCH] Fix duplicate webhook resource for Flux CD compatibility
+
+After upgrading Helm and Flux CD, the portieris webhooks.yaml
+template fails to install because it defines two
+MutatingWebhookConfiguration resources with the same name
+"image-admission-config". The Kustomize post-renderer now
+rejects duplicate resource IDs:
+
+  may not add resource with an already registered id:
+  MutatingWebhookConfiguration.v1.admissionregistration.k8s.io/
+  image-admission-config.[noNs]
+
+Remove the inoperative placeholder webhook to resolve the
+conflict. The active webhook created by the Helm post-install
+hook is cleaned up via the app lifecycle post_remove hook.
+
+Signed-off-by: David Bastos <david.bastos@windriver.com>
+---
+ helm/portieris/templates/webhooks.yaml | 32 --------------------------
+ 1 file changed, 32 deletions(-)
+
+diff --git a/helm/portieris/templates/webhooks.yaml b/helm/portieris/templates/webhooks.yaml
+index 915a1d9..a15317c 100644
+--- a/helm/portieris/templates/webhooks.yaml
++++ b/helm/portieris/templates/webhooks.yaml
+@@ -1,35 +1,3 @@
+-# an inoperative webhook, establishes the object in the helm manifest such that it is uninstalled on chart delete
+-apiVersion: admissionregistration.k8s.io/v1
+-kind: MutatingWebhookConfiguration
+-metadata:
+-  name: image-admission-config
+-  annotations:
+-  {{ if .Values.UseCertManager }}
+-    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/portieris-certs
+-  {{ end }}
+-  labels:
+-    app: {{ template "portieris.name" . }}
+-    chart: {{ template "portieris.chart" . }}
+-    release: {{ .Release.Name }}
+-    heritage: {{ .Release.Service }}
+-webhooks:
+-  - name: trust.hooks.securityenforcement.admission.cloud.ibm.com
+-    clientConfig:
+-      service:
+-        name: {{ template "portieris.name" . }}
+-        namespace: {{ .Release.Namespace }}
+-        path: "/admit"
+-      {{ if not .Values.UseCertManager }}
+-      {{ if .Values.UseGeneratedCerts.enabled }}
+-      caBundle: {{ required "A valid .Values.UseGeneratedCerts.caCert entry required!" .Values.UseGeneratedCerts.caCert | b64enc | quote }}
+-      {{ else }}
+-      caBundle: {{ .Files.Get "certs/ca.crt" | b64enc }}
+-      {{ end }}
+-      {{ end }}
+-    rules: []
+-    sideEffects: None
+-    admissionReviewVersions: ["v1"]
+----
+ # webhook replaces the inoperative one, after the service is installed
+ apiVersion: admissionregistration.k8s.io/v1
+ kind: MutatingWebhookConfiguration
+-- 
+2.43.0

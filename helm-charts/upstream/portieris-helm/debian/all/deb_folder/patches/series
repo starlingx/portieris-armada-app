@@ -2,3 +2,4 @@
 0002-Hardcode-app-label-selector.patch
 0003-Adjust-liveness-readiness-probe-configurations.patch
 0004-Add-trusted-CA-Cert-secret.patch
+0005-Fix-duplicate-webhook-for-fluxcd-compatibility.patch

@@ -44,6 +44,11 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
                 if hook_info.relative_timing == LifecycleConstants.APP_LIFECYCLE_TIMING_POST:
                     return self.post_apply(app_op, app)
 
+            # Remove
+            if hook_info.operation == constants.APP_REMOVE_OP:
+                if hook_info.relative_timing == LifecycleConstants.APP_LIFECYCLE_TIMING_POST:
+                    return self.post_remove(app_op)
+
             # B&R
             if hook_info.operation == constants.APP_BACKUP:
                 if hook_info.relative_timing == LifecycleConstants.APP_LIFECYCLE_TIMING_PRE:
@@ -250,6 +255,28 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
             "Executing post_restore for {} app".format(constants.HELM_APP_PORTIERIS)
         )
         self._recreate_portieries_mutating_webhook_configuration(app_op, app)
+
+    def post_remove(self, app_op):
+        """Post Remove actions
+
+        Delete the MutatingWebhookConfiguration created by the Helm
+        post-install hook, as it is not tracked by the Helm manifest
+        and is not automatically cleaned up on uninstall.
+
+        :param app_op: AppOperator object
+        """
+        LOG.info(
+            "Executing post_remove for {} app".format(constants.HELM_APP_PORTIERIS)
+        )
+        webhook = self._get_portieris_mutating_webhook_configuration(app_op)
+        if webhook:
+            LOG.info("Deleting MutatingWebhookConfiguration %s" %
+                     webhook.metadata.name)
+            app_op._kube.kube_delete_mutating_webhook_configuration(
+                webhook.metadata.name)
+        else:
+            LOG.info("MutatingWebhookConfiguration not found. "
+                     "Nothing to clean up.")
 
     def _get_portieris_mutating_webhook_configuration(self, app_op):
         webhooks = app_op._kube.kube_get_mutating_webhook_configurations_by_selector(
