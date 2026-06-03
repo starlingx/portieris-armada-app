@@ -1,3 +1,9 @@
+portieris-helm (0.14.0-1) unstable; urgency=medium
+
+  * Upversion Portieris to v0.14.0
+
+ --  Mateus Gianetti de Jesus <Mateus.GianettideJesus@windriver.com>  Wed, 03 Jun 2026 20:16:53 +0000
+
 portieris-helm (0.13.35-1) unstable; urgency=medium
 
   * Upversion Portieris to v0.13.35
