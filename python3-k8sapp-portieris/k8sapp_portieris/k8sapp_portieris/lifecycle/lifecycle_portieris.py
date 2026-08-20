@@ -248,13 +248,13 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         LOG.debug(
             "Executing post_backup for {} app".format(constants.HELM_APP_PORTIERIS)
         )
-        self._recreate_portieries_mutating_webhook_configuration(app_op, app)
+        self._recreate_portieris_mutating_webhook_configuration(app_op, app)
 
     def post_restore(self, app_op, app):
         LOG.debug(
             "Executing post_restore for {} app".format(constants.HELM_APP_PORTIERIS)
         )
-        self._recreate_portieries_mutating_webhook_configuration(app_op, app)
+        self._recreate_portieris_mutating_webhook_configuration(app_op, app)
 
     def post_remove(self, app_op):
         """Post Remove actions
@@ -289,7 +289,7 @@ class PortierisAppLifecycleOperator(base.AppLifecycleOperator):
         if webhooks:
             return webhooks[0]
 
-    def _recreate_portieries_mutating_webhook_configuration(self, app_op, app):
+    def _recreate_portieris_mutating_webhook_configuration(self, app_op, app):
         webhook = self._get_portieris_mutating_webhook_configuration(app_op)
         if webhook:
             LOG.info("Mutating webhook found. Nothing to be done.")

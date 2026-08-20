@@ -1,0 +1,13 @@
+- hosts: all
+  tasks:
+    - name: Check if UTCoverage directory exists
+      stat:
+        path: "{{ zuul.project.src_dir }}/python3-k8sapp-portieris/k8sapp_portieris/UTCoverage"
+      register: utcov_dir
+    - name: Upload security reports
+      synchronize:
+        src: "{{ zuul.project.src_dir }}/python3-k8sapp-portieris/k8sapp_portieris/UTCoverage/"
+        dest: "{{ zuul.executor.log_root }}/security/"
+        mode: pull
+      when: utcov_dir.stat.exists
+      failed_when: false
