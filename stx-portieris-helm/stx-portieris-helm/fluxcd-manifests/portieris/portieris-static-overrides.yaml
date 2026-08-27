@@ -10,9 +10,8 @@ images:
   tags:
     portieris: icr.io/portieris/portieris:v0.14.0
 image:
-  host: registry.local:9001/icr.io/portieris
+  repository: icr.io/portieris/portieris
   pullSecret: default-registry-key
-  image: portieris
   tag: v0.14.0
 tolerations:
   - key: "node-role.kubernetes.io/master"

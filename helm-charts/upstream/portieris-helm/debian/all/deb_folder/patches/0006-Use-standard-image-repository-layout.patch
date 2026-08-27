@@ -1,0 +1,65 @@
+From 04cfda6b04d6d623faa615bae0e80f62c318272e Mon Sep 17 00:00:00 2001
+From: Mateus Gianetti de Jesus <Mateus.GianettideJesus@windriver.com>
+Date: Thu, 27 Aug 2026 19:04:52 -0300
+Subject: [PATCH] Use standard image repository layout
+
+The chart composes its image reference from an 'image.host' prefix and a
+bare 'image.image' name. The platform application image parser treats the
+bare name as an image reference and prefixes it with the local registry, so
+the rendered reference carries the registry twice and kubelet rejects it as
+an invalid reference.
+
+Move to the 'image.repository' plus 'image.tag' layout, which the parser
+already recognises and rewrites correctly. The self-protection ImagePolicy
+in policies.yaml is updated to match, so Portieris continues to permit its
+own image.
+---
+ helm/portieris/templates/deployment.yaml | 2 +-
+ helm/portieris/templates/policies.yaml   | 2 +-
+ helm/portieris/values.yaml               | 3 +--
+ 3 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/helm/portieris/templates/deployment.yaml b/helm/portieris/templates/deployment.yaml
+index 4a94137..820fe4d 100644
+--- a/helm/portieris/templates/deployment.yaml
++++ b/helm/portieris/templates/deployment.yaml
+@@ -39,7 +39,7 @@ spec:
+       {{- end }}
+       containers:
+         - name: {{ .Chart.Name }}
+-          image: "{{ .Values.image.host | default "docker.io/ibmcom"  }}/{{ .Values.image.image }}:{{ .Values.image.tag }}"
++          image: "{{ .Values.image.repository | default "docker.io/ibmcom/portieris" }}:{{ .Values.image.tag }}"
+           imagePullPolicy: {{ .Values.image.pullPolicy }}
+           ports:
+             - name: http
+diff --git a/helm/portieris/templates/policies.yaml b/helm/portieris/templates/policies.yaml
+index ed8c84f..4b90777 100644
+--- a/helm/portieris/templates/policies.yaml
++++ b/helm/portieris/templates/policies.yaml
+@@ -9,7 +9,7 @@ metadata:
+ spec:
+    repositories:
+     # This policy prevents Portieris from denying its own updates. Do not remove this policy or portieris may not function correctly.
+-    - name: "{{ .Values.image.host | default "docker.io/ibmcom"  }}/{{ .Values.image.image }}"
++    - name: "{{ .Values.image.repository | default "docker.io/ibmcom/portieris" }}"
+ ---
+ {{- if (eq .Values.PolicySet "IKS") }}
+ apiVersion: portieris.cloud.ibm.com/v1
+diff --git a/helm/portieris/values.yaml b/helm/portieris/values.yaml
+index 736e451..6664224 100644
+--- a/helm/portieris/values.yaml
++++ b/helm/portieris/values.yaml
+@@ -12,9 +12,8 @@ podAnnotations: {}
+   # sidecar.istio.io/inject: "false"
+ 
+ image:
+-  host: icr.io/portieris
++  repository: icr.io/portieris/portieris
+   pullSecret:
+-  image: portieris
+   tag: v0.14.0
+   pullPolicy: Always
+ 
+-- 
+2.43.0
+
